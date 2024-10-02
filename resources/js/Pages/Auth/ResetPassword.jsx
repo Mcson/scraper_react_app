@@ -27,14 +27,16 @@ export default function ResetPassword({ token, email }) {
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
 
                     <TextInput
                         id="email"
                         type="email"
                         name="email"
                         value={data.email}
-                        className="mt-1 block w-full"
+                        label="Email"
+                        classNames={{
+                            inputWrapper: "group-data-[focus=true]:border-primary-400"
+                        }}
                         autoComplete="username"
                         onChange={(e) => setData('email', e.target.value)}
                     />
@@ -42,17 +44,18 @@ export default function ResetPassword({ token, email }) {
                     <InputError message={errors.email} className="mt-2" />
                 </div>
 
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                <div className="mt-4">    
 
                     <TextInput
                         id="password"
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
+                        label="Password"
+                        classNames={{
+                            inputWrapper: "group-data-[focus=true]:border-primary-400"
+                        }}
                         autoComplete="new-password"
-                        isFocused={true}
                         onChange={(e) => setData('password', e.target.value)}
                     />
 
@@ -60,17 +63,16 @@ export default function ResetPassword({ token, email }) {
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirm Password"
-                    />
 
                     <TextInput
                         type="password"
                         id="password_confirmation"
                         name="password_confirmation"
                         value={data.password_confirmation}
-                        className="mt-1 block w-full"
+                        label="Confirm Password"
+                        classNames={{
+                            inputWrapper: "group-data-[focus=true]:border-primary-400"
+                        }}
                         autoComplete="new-password"
                         onChange={(e) =>
                             setData('password_confirmation', e.target.value)

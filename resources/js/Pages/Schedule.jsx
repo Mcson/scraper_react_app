@@ -11,10 +11,10 @@ export default function Schedule() {
             header={
                 <div className='flex gap-x-8 relative'>
                     <h2 className="text-xl font-semibold float-start leading-tight text-gray-800">
-                    <FontAwesomeIcon icon={faCalendarDays} className="text-blue-500 mr-2" /> Schedule
+                    <FontAwesomeIcon icon={faCalendarDays} className="text-primary-500 mr-2" /> Schedule
                     </h2>
 
-                    <PlusButton classname="flex items-center justify-center w-8 h-8 bg-blue-600 text-white aspect-square hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-300 absolute right-0"/>
+                    <PlusButton classname="flex items-center justify-center w-8 h-8 bg-primary-600 text-white aspect-square hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-300 absolute right-0"/>
                 </div>
             }
         >

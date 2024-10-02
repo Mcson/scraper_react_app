@@ -59,10 +59,7 @@ export default function UpdatePasswordForm({ className = '' }) {
 
             <form onSubmit={updatePassword} className="mt-6 space-y-6">
                 <div>
-                    <InputLabel
-                        htmlFor="current_password"
-                        value="Current Password"
-                    />
+                   
 
                     <TextInput
                         id="current_password"
@@ -72,8 +69,11 @@ export default function UpdatePasswordForm({ className = '' }) {
                             setData('current_password', e.target.value)
                         }
                         type="password"
-                        className="mt-1 block w-full"
                         autoComplete="current-password"
+                        label="Current Password"
+                        classNames = {{
+                            inputWrapper: "group-data-[focus=true]:border-primary-400"
+                        }}
                     />
 
                     <InputError
@@ -83,7 +83,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="New Password" />
+                    
 
                     <TextInput
                         id="password"
@@ -91,18 +91,17 @@ export default function UpdatePasswordForm({ className = '' }) {
                         value={data.password}
                         onChange={(e) => setData('password', e.target.value)}
                         type="password"
-                        className="mt-1 block w-full"
                         autoComplete="new-password"
+                        label="New Password"
+                        classNames = {{
+                            inputWrapper: "group-data-[focus=true]:border-primary-400"
+                        }}
                     />
 
                     <InputError message={errors.password} className="mt-2" />
                 </div>
 
                 <div>
-                    <InputLabel
-                        htmlFor="password_confirmation"
-                        value="Confirm Password"
-                    />
 
                     <TextInput
                         id="password_confirmation"
@@ -111,8 +110,11 @@ export default function UpdatePasswordForm({ className = '' }) {
                             setData('password_confirmation', e.target.value)
                         }
                         type="password"
-                        className="mt-1 block w-full"
                         autoComplete="new-password"
+                        label="Confirm Password"
+                        classNames = {{
+                            inputWrapper: "group-data-[focus=true]:border-primary-400"
+                        }}
                     />
 
                     <InputError
@@ -122,7 +124,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                    <PrimaryButton isLoading={processing}>Save</PrimaryButton>
 
                     <Transition
                         show={recentlySuccessful}
