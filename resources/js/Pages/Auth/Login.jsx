@@ -33,16 +33,17 @@ export default function Login({ status, canResetPassword }) {
 
             <form onSubmit={submit}>
                 <div>
-                    <InputLabel htmlFor="email" value="Email" />
-
+                    
                     <TextInput
                         id="email"
                         type="email"
                         name="email"
                         value={data.email}
-                        className="mt-1 block w-full"
                         autoComplete="username"
-                        isFocused={true}
+                        label="Email"
+                        classNames = {{
+                            inputWrapper: "group-data-[focus=true]:border-primary-400"
+                        }}
                         onChange={(e) => setData('email', e.target.value)}
                     />
 
@@ -50,15 +51,18 @@ export default function Login({ status, canResetPassword }) {
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                    
 
                     <TextInput
                         id="password"
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full"
                         autoComplete="current-password"
+                        label="Password"
+                        classNames = {{
+                            inputWrapper: "group-data-[focus=true]:border-primary-400"
+                        }}
                         onChange={(e) => setData('password', e.target.value)}
                     />
 
@@ -84,13 +88,13 @@ export default function Login({ status, canResetPassword }) {
                     {canResetPassword && (
                         <Link
                             href={route('password.request')}
-                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none"
                         >
                             Forgot your password?
                         </Link>
                     )}
 
-                    <PrimaryButton className="ms-4" disabled={processing}>
+                    <PrimaryButton isLoading={processing}>
                         Log in
                     </PrimaryButton>
                 </div>

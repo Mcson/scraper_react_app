@@ -11,7 +11,7 @@ export default function Scraper() {
             header={
                 <div className='flex gap-x-8 relative'>
                     <h2 className="text-xl font-semibold float-start leading-tight text-gray-800">
-                    <FontAwesomeIcon icon={faGears} className="text-blue-500 mr-2" />    Data Collected 
+                    <FontAwesomeIcon icon={faGears} className="text-primary-500 mr-2" />    Data Collected 
                     </h2>
 
                     <NavLink
