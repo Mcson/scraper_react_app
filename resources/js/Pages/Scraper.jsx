@@ -4,6 +4,9 @@ import NavLink from '@/Components/NavLink';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGears } from '@fortawesome/free-solid-svg-icons';
 import PlusButton from '@/Components/PlusButton';
+import SidebarLayout from '@/Components/SidebarLayout';
+import {Tab, Card, CardBody} from "@nextui-org/react";
+import TableComp from '@/Components/TableComp';
 
 export default function Scraper() {
     return (
@@ -29,7 +32,48 @@ export default function Scraper() {
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                    <div className="overflow-hidden shadow-sm sm:rounded-lg">
+
+                        <SidebarLayout>
+                            <Tab 
+                                key="photos" 
+                                title={
+                                    <>
+                                        <FontAwesomeIcon icon={faGears} className="mr-2" /> View Data
+                                    </>
+                                }
+                            >
+                                <TableComp/>
+                            </Tab>
+                            <Tab 
+                                key="music"
+                                title={
+                                    <>
+                                        <FontAwesomeIcon icon={faGears} className="mr-2" /> Scrape
+                                    </>
+                                }
+                            >
+                                <Card>
+                                <CardBody>
+                                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                                </CardBody>
+                                </Card>  
+                            </Tab>
+                            <Tab 
+                                key="videos"
+                                title={
+                                    <>
+                                        <FontAwesomeIcon icon={faGears} className="mr-2" /> Register
+                                    </>
+                                }
+                            >
+                                <Card>
+                                <CardBody>
+                                    Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                </CardBody>
+                                </Card>  
+                            </Tab>
+                        </SidebarLayout>
                         
                     </div>
                 </div>
