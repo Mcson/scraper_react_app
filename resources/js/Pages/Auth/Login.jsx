@@ -94,7 +94,7 @@ export default function Login({ status, canResetPassword }) {
                         </Link>
                     )}
 
-                    <PrimaryButton isLoading={processing}>
+                    <PrimaryButton type="submit" isLoading={processing}>
                         Log in
                     </PrimaryButton>
                 </div>

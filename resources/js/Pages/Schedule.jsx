@@ -2,7 +2,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import PlusButton from '@/Components/PlusButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarDays } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDays, faPlus } from '@fortawesome/free-solid-svg-icons';
+import PrimaryButton from '@/Components/PrimaryButton';
 import SidebarLayout from '@/Components/SidebarLayout';
 import {Tab, Card, CardBody} from "@nextui-org/react";
 import TableComp from '@/Components/TableComp';
@@ -11,12 +12,13 @@ export default function Schedule() {
     return (
         <AuthenticatedLayout
             header={
-                <div className='flex gap-x-8 relative'>
+                <div className='flex gap-x-8 justify-between'>
                     <h2 className="text-xl font-semibold float-start leading-tight text-gray-800">
                     <FontAwesomeIcon icon={faCalendarDays} className="text-primary-500 mr-2" /> Schedule
                     </h2>
 
-                    <PlusButton classname="flex items-center justify-center w-8 h-8 bg-primary-600 text-white aspect-square hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-300 absolute right-0"/>
+                    {/* <PlusButton classname="flex items-center justify-center w-8 h-8 bg-primary-600 text-white aspect-square hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-300 absolute right-0"/> */}
+                    <PrimaryButton isIconOnly><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
                 </div>
             }
         >

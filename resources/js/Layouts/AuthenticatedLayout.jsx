@@ -32,7 +32,7 @@ export default function Authenticated({ header, children }) {
                                 </NavLink>
                                 <NavLink
                                     href={route('scraper')}
-                                    active={route().current('scraper')}
+                                    active={route().current('scraper') || route().current('register.website')}
                                 >
                                     Web Scraper
                                 </NavLink>
