@@ -3,8 +3,13 @@
 @tailwind utilities;
 
 
-/* sidebar tab contents flex auto */
+/* start sidebar tab contents flex auto */
 [role="tabpanel"] {
     flex: auto;
     padding-right: 0;
 }
+
+[data-slot="tab"] {
+    justify-content: start;
+}
+/* end sidebar tab contents flex auto */
