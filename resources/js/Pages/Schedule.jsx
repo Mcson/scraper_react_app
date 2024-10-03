@@ -8,6 +8,30 @@ import {Tab, Card, CardBody} from "@nextui-org/react";
 import TableComp from '@/Components/TableComp';
 
 export default function Schedule() {
+
+    // dummy datas with test actions
+    const tableHeader = [
+        { label: 'Name', field: 'name' },
+        { label: 'Age', field: 'age' },
+        { label: 'Email', field: 'email' },
+        {
+            label: 'Actions', 
+            field: 'actions',
+            render: (row) => (
+                <>
+                    <button onClick={() => alert(`Editing ${row.name}`)}>Edit</button>
+                    <button onClick={() => alert(`Deleting ${row.name}`)}>Delete</button>
+                </>
+            )
+        }
+    ];
+
+    const tableData = [
+        { id: 1, name: 'John Doe', age: 28, email: 'john@example.com' },
+        { id: 2, name: 'Jane Smith', age: 34, email: 'jane@example.com' },
+        { id: 3, name: 'Sam Green', age: 25, email: 'sam@example.com' },
+    ];
+
     return (
         <AuthenticatedLayout
             header={
@@ -35,7 +59,7 @@ export default function Schedule() {
                                         </>
                                     }
                                 >
-                                    <TableComp/>
+                                    <TableComp tableHeader={tableHeader} tableData={tableData}/>
                                 </Tab>
                                 <Tab key="music" title="Another Tab">
                                     <Card>

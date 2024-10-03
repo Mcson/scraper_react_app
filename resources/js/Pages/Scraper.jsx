@@ -9,6 +9,20 @@ import {Tab, Card, CardBody} from "@nextui-org/react";
 import TableComp from '@/Components/TableComp';
 
 export default function Scraper() {
+
+    // dummy datas
+    const tableHeader = [
+        { label: 'Name', field: 'name' },
+        { label: 'Age', field: 'age' },
+        { label: 'Email', field: 'email' },
+    ];
+
+    const tableData = [
+        { id: 1, name: 'John Doe', age: 28, email: 'john@example.com' },
+        { id: 2, name: 'Jane Smith', age: 34, email: 'jane@example.com' },
+        { id: 3, name: 'Sam Green', age: 25, email: 'sam@example.com' },
+    ];
+
     return (
         <AuthenticatedLayout
             header={
@@ -43,7 +57,7 @@ export default function Scraper() {
                                     </>
                                 }
                             >
-                                <TableComp/>
+                                <TableComp tableHeader={tableHeader} tableData={tableData}/>
                             </Tab>
                             <Tab 
                                 key="music"
