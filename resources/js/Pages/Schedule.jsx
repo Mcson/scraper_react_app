@@ -1,9 +1,11 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import NavLink from '@/Components/NavLink';
 import PlusButton from '@/Components/PlusButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarDays } from '@fortawesome/free-solid-svg-icons';
+import SidebarLayout from '@/Components/SidebarLayout';
+import {Tab, Card, CardBody} from "@nextui-org/react";
+import TableComp from '@/Components/TableComp';
 
 export default function Schedule() {
     return (
@@ -22,8 +24,35 @@ export default function Schedule() {
 
             <div className="py-12">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        
+                    <div className="overflow-hidden shadow-sm sm:rounded-lg">
+
+                            <SidebarLayout>
+                                <Tab 
+                                    key="photos" 
+                                    title={
+                                        <>
+                                            <FontAwesomeIcon icon={faCalendarDays} className="mr-2" /> Schedule
+                                        </>
+                                    }
+                                >
+                                    <TableComp/>
+                                </Tab>
+                                <Tab key="music" title="Another Tab">
+                                    <Card>
+                                    <CardBody>
+                                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                                    </CardBody>
+                                    </Card>  
+                                </Tab>
+                                <Tab key="videos" title="Another Tab1">
+                                    <Card>
+                                    <CardBody>
+                                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                                    </CardBody>
+                                    </Card>  
+                                </Tab>
+                            </SidebarLayout>
+
                     </div>
                 </div>
             </div>
