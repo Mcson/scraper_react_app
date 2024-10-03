@@ -18,8 +18,8 @@ export default function TableComp({ tableHeader, tableData }) {
           tableData.map((td) => (
             <TableRow key={td.id}>
 
-              {tableHeader.map((th) => (
-                <TableCell key={th.field}>
+              {tableHeader.map((th, index) => (
+                <TableCell key={index}>
 
                   {th.render ? th.render(td) : td[th.field]}
 
