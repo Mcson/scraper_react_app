@@ -1,7 +1,7 @@
 import React from "react";
 import {Tabs} from "@nextui-org/react";
 
-export default function SidebarLayout({ children }) {
+export default function SidebarLayout({ children, titleState }) {
   
   return (
     <div className="flex flex-col">
@@ -15,6 +15,7 @@ export default function SidebarLayout({ children }) {
             tab: "",
             tabContent: "group-data-[selected=true]:text-[#06b6d4] data-slot-[panel]:flex-auto"
           }}
+          onSelectionChange={(key) => titleState(key)}
         >
 
           {children}
