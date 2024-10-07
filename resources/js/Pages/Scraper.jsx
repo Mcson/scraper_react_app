@@ -1,13 +1,17 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGears, faPlus, faTrashCan, faPenToSquare, faMagnifyingGlass, faEye } from '@fortawesome/free-solid-svg-icons';
-import PrimaryButton from '@/Components/PrimaryButton';
+import { faGears, faPlus, faTrashCan, faPenToSquare, faMagnifyingGlass, faEye, faGlobe, faListCheck, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
 import SidebarLayout from '@/Components/SidebarLayout';
-import {Tab, Card, CardBody, Chip, Link, Tooltip } from "@nextui-org/react";
+import {Tab, Chip, Link, Tooltip, } from "@nextui-org/react";
 import TableComp from '@/Components/TableComp';
+import Register from './RegisterProductWebsite';
+import { useState } from "react";
+import Scrape from './Scrape';
 
 export default function Scraper() {
+
+    const [title, setTitle] = useState("Scraped Data");
 
     // scapred dummy datas
     const scrapedDataTableHeader = [
@@ -133,17 +137,15 @@ export default function Scraper() {
             header={
                 <div className='flex gap-x-8 justify-between relative'>
                     <h2 className="text-xl font-semibold float-start leading-tight text-gray-800">
-                    <FontAwesomeIcon icon={faGears} className="text-primary-500 mr-2" />    Data Collected 
+                        <FontAwesomeIcon icon={faGears} className="text-primary-500 mr-2" /> {title} 
                     </h2>
 
-                    <Link
+                    {/* <Link
                         href={route('register.website')}
                        
                     >
-                    {/* <PlusButton classname="flex items-center justify-center w-5 h-5 "/>
-                    Register */}
-                    <PrimaryButton className='lower-case' startContent={<FontAwesomeIcon icon={faPlus}/>}>Register</PrimaryButton>
-                    </Link>
+                        <PrimaryButton className='lower-case' startContent={<FontAwesomeIcon icon={faPlus}/>}>Register</PrimaryButton>
+                    </Link> */}
                 </div>
             }
         >
@@ -153,40 +155,49 @@ export default function Scraper() {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden shadow-sm sm:rounded-lg">
 
-                        <SidebarLayout>
+                        <SidebarLayout
+                            titleState={setTitle}
+                        >
+
                             <Tab 
-                                key="photos" 
+                                key="Scraped Data" 
                                 title={
                                     <>
-                                        <FontAwesomeIcon icon={faGears} className="mr-2" /> View Data
+                                        <FontAwesomeIcon icon={faListCheck} className="mr-2" /> View Data
                                     </>
                                 }
                             >
                                 <TableComp tableHeader={scrapedDataTableHeader} tableData={scrapedDataTableData}/>
                             </Tab>
                             <Tab 
-                                key="music"
+                                key="Scrape"
                                 title={
                                     <>
                                         <FontAwesomeIcon icon={faGears} className="mr-2" /> Scrape
                                     </>
                                 }
                             >
-                                <Card>
-                                <CardBody>
-                                    Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                                </CardBody>
-                                </Card>  
+                                <Scrape /> 
                             </Tab>
                             <Tab 
-                                key="videos"
+                                key="Registered Website"
                                 title={
                                     <>
-                                        <FontAwesomeIcon icon={faGears} className="mr-2" /> Register
+                                        <FontAwesomeIcon icon={faGlobe} className="mr-2" /> Websites
                                     </>
                                 }
                             >
                                 <TableComp tableHeader={registeredTableHeader} tableData={registeredTableData}/>
+                            </Tab>
+                            <Tab 
+                                key="Register Product Website"
+                                title={
+                                    <>
+                                        <FontAwesomeIcon icon={faFolderOpen} className="mr-2" /> Register
+                                    </>
+                                }
+                            >
+                                <Register/>
                             </Tab>
                         </SidebarLayout>
                         
