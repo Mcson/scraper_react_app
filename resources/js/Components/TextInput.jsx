@@ -13,7 +13,7 @@ export default forwardRef(function TextInput({ type = 'text', classNames = '', l
     return (
         <Input
             {...props}
-            // size = "lg"
+            size = "sm"
             fullWidth
             variant="bordered"
             label = {label}
