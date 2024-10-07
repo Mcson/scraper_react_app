@@ -19,12 +19,37 @@ export default function Schedule() {
     }
 
 
+    const [title, setTitle] = useState("Schedules");
+
+    // dummy datas with test actions
+    const tableHeader = [
+        { label: 'Name', field: 'name' },
+        { label: 'Age', field: 'age' },
+        { label: 'Email', field: 'email' },
+        {
+            label: 'Actions', 
+            field: 'actions',
+            render: (row) => (
+                <>
+                    <button onClick={() => alert(`Editing ${row.name}`)}>Edit</button>
+                    <button onClick={() => alert(`Deleting ${row.name}`)}>Delete</button>
+                </>
+            )
+        }
+    ];
+
+    const tableData = [
+        { id: 1, name: 'John Doe', age: 28, email: 'john@example.com' },
+        { id: 2, name: 'Jane Smith', age: 34, email: 'jane@example.com' },
+        { id: 3, name: 'Sam Green', age: 25, email: 'sam@example.com' },
+    ];
+
     return (
         <AuthenticatedLayout
             header={
                 <div className='flex gap-x-8 justify-between'>
                     <h2 className="text-xl font-semibold float-start leading-tight text-gray-800">
-                    <FontAwesomeIcon icon={faCalendarDays} className="text-primary-500 mr-2" /> Schedule
+                    <FontAwesomeIcon icon={faCalendarDays} className="text-primary-500 mr-2" /> {title}
                     </h2>
 
                     {/* <PlusButton classname="flex items-center justify-center w-8 h-8 bg-primary-600 text-white aspect-square hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-300 absolute right-0"/> */}
@@ -38,25 +63,27 @@ export default function Schedule() {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden shadow-sm sm:rounded-lg">
 
-                            <SidebarLayout>
+                            <SidebarLayout
+                                titleState={setTitle}
+                            >
                                 <Tab 
-                                    key="photos" 
+                                    key="Schedules" 
                                     title={
                                         <>
                                             <FontAwesomeIcon icon={faCalendarDays} className="mr-2" /> Schedule
                                         </>
                                     }
                                 >
-                                    <TableComp/>
+                                    <TableComp tableHeader={tableHeader} tableData={tableData}/>
                                 </Tab>
-                                <Tab key="music" title="Another Tab">
+                                <Tab key="Another Tab" title="Another Tab">
                                     <Card>
                                     <CardBody>
                                         Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
                                     </CardBody>
                                     </Card>  
                                 </Tab>
-                                <Tab key="videos" title="Another Tab1">
+                                <Tab key="Another Tab1" title="Another Tab1">
                                     <Card>
                                     <CardBody>
                                         Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
