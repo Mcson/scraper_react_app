@@ -7,16 +7,21 @@ import TimeNextUi from '@/Components/TimeNextUi';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { useForm } from '@inertiajs/react';
 import { TimeInput } from '@nextui-org/react';
+import { useState, useEffect } from 'react';
+import InputError from '@/Components/InputError';
+
 
 export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddScheduleToggle }){
-    const { data, setData, post } = useForm({
+    const { data, setData, post, processing, errors, reset, setError } = useForm({
         title: '',
         frequency: '',
         date: '',
         time: '',
         products: []
     });
-
+    
+    const [isDateInvalid, setIsDateInvalid] = useState(false);
+    const isSubmitDisabled = !data.title || !data.frequency || !data.date || !data.time || data.products.length === 0 || isDateInvalid;
 
     const freqTypes = [
         {key: 'daily', label: 'Daily'},
@@ -25,21 +30,33 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
     ]
 
     const items = [
-        {id: 1, label: 'Daily'},
-        {id: 2, label: 'Weekly'},
-        {id: 3, label: 'Monthly'},
-        {id: 4, label: 'Abc'},
-        {id: 5, label: 'Efg'},
-        {id: 6, label: 'Hij'},
-        {id: 7, label: 'klm'},
-        {id: 8, label: 'nop'},
-        {id: 9, label: 'qrs'},
+        {pcode: 1, pname: 'Product 1'},
+        {pcode: 2, pname: 'Product 2'},
+        {pcode: 3, pname: 'Product 3'},
+        {pcode: 4, pname: 'Product 4'},
+        {pcode: 5, pname: 'Product 5'},
+        {pcode: 6, pname: 'Product 6'},
+        {pcode: 7, pname: 'Product 7'},
+        {pcode: 8, pname: 'Product 8'},
+        {pcode: 9, pname: 'Product 9'},
     ];
 
     const handleSubmit = (e) => {
-        
-        console.log(data);
+        // console.log(data);
+       post(route('schedule.store'), {
+        onSuccess: (response) => {
+            console.log(response);
+        }
+       });
     }
+
+    useEffect(() => {
+        if(!isAddSheduleModalOpen){
+            reset();
+            setIsDateInvalid(false); 
+            Object.keys(errors).forEach(key => setError(key, ''));
+        } 
+    }, [isAddSheduleModalOpen, reset])
 
     return (
         <ModalNextUi 
@@ -47,7 +64,9 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
                 onOpenChange={handleAddScheduleToggle} 
                 modalTitle="Create Schedule" 
                 footerContent={
-                <PrimaryButton type="submit" onPress={handleSubmit} className='lower-case'>Submit</PrimaryButton>}
+                <PrimaryButton type="submit" onPress={handleSubmit} className='lower-case' isLoading={processing} isDisabled={isSubmitDisabled}>Submit</PrimaryButton>
+                
+                }
             >
                 <form>
                     <div>
@@ -61,6 +80,7 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
                             value={data.title}
                             onChange={(e) => setData('title', e.target.value)}
                         />
+                        <InputError message={errors.title} className="mt-2" />
                     </div>
                     <div className='mt-4'>
                             <SelectInput 
@@ -74,12 +94,18 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
                                 value={data.frequency}
                                 onChange={(e) => setData('frequency', e.target.value)}
                             />
+                            <InputError message={errors.frequency} className="mt-2" />
                     </div>
                     <div className='mt-4'>
                          <DatePickerComponent 
+                            label='Start Date'
                             value={data.value}
-                            onChange={(date) => setData('date', date)}
+                            onDateChange={(date, isInvalid) => {
+                                setData('date', date);
+                                setIsDateInvalid(isInvalid); // Update invalid state based on DatePickerComponent
+                                }}
                          />
+                         <InputError message={errors.date} className="mt-2" />
                     </div>
                     <div className='mt-4'>
                             <TimeNextUi 
@@ -93,7 +119,7 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
                             value={data.time}
                             onChange={(time) => setData('time', time)}
                             />
-
+                            <InputError message={errors.time} className="mt-2" />
                     </div>
                     <div className='mt-4'>
                         <SelectSearchMultiple 
@@ -101,7 +127,7 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
                         label="Select Products" 
                         onSelectChange={products => setData('products', products)}
                         />
-
+                        <InputError message={errors.products} className="mt-2" />
                     </div>
                 </form>
             </ModalNextUi>
