@@ -8,8 +8,16 @@ import SidebarLayout from '@/Components/SidebarLayout';
 import {Tab, Card, CardBody} from "@nextui-org/react";
 import TableComp from '@/Components/TableComp';
 import { useState } from 'react';
+import CreateScheduleModal from '@/Components/CreateScheduleModal';
+
 
 export default function Schedule() {
+    const [isAddSheduleModalOpen, setAddSheduleModalOpen] = useState(false);
+
+    const handleAddScheduleToggle = (e) => {
+        setAddSheduleModalOpen(!isAddSheduleModalOpen)
+    }
+
 
     const [title, setTitle] = useState("Schedules");
 
@@ -45,7 +53,7 @@ export default function Schedule() {
                     </h2>
 
                     {/* <PlusButton classname="flex items-center justify-center w-8 h-8 bg-primary-600 text-white aspect-square hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-300 absolute right-0"/> */}
-                    <PrimaryButton isIconOnly><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
+                    <PrimaryButton className='lower-case' startContent={<FontAwesomeIcon icon={faPlus}/>} onPress={handleAddScheduleToggle}>Create Schedule</PrimaryButton>
                 </div>
             }
         >
@@ -87,6 +95,10 @@ export default function Schedule() {
                     </div>
                 </div>
             </div>
+            <CreateScheduleModal 
+                isAddSheduleModalOpen={isAddSheduleModalOpen} 
+                handleAddScheduleToggle={handleAddScheduleToggle} 
+            />
         </AuthenticatedLayout>
     );
 }
