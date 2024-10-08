@@ -1,136 +1,64 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGears, faPlus, faTrashCan, faPenToSquare, faMagnifyingGlass, faEye, faGlobe, faListCheck, faFolderOpen } from '@fortawesome/free-solid-svg-icons';
-import SidebarLayout from '@/Components/SidebarLayout';
-import {Tab, Chip, Link, Tooltip, } from "@nextui-org/react";
-import TableComp from '@/Components/TableComp';
-import Register from './RegisterProductWebsite';
-import { useState } from "react";
+import { faGears, faGlobe, faListCheck, faFolderOpen, faDownload, faFolderClosed } from '@fortawesome/free-solid-svg-icons';
+import { CardBody, Card, } from "@nextui-org/react";
+import { useState, useEffect } from "react";
 import Scrape from './Scrape';
+import RegisteredProductWebsite from './RegisteredProductWebsite';
+import RegisterProductWebsite from './RegisterProductWebsite';
+import ViewIcpData from './ViewIcpData';
+import ViewNonIcpData from './ViewNonIcpData';
+import Downloads from './Downloads';
+import SideNav from '@/Components/SideNav';
 
 export default function Scraper() {
 
-    const [title, setTitle] = useState("Scraped Data");
+    const [active, setActive] = useState("register_product_web");
+    const [title, setTitle] = useState("Register Product");
 
-    // scapred dummy datas
-    const scrapedDataTableHeader = [
-        // change the field values, it needs to be identical with the column name from DB
-        { label: 'Product Code', field: 'code' },
-        { label: 'Product Name', field: 'name' },
-        { 
-            label: 'Url', 
-            field: 'url',
-            render: (td) => (
-                <div className='text-center'>
-                    <Tooltip color="primary" content="View Site">
-                        <span className="text-lg text-primary cursor-pointer active:opacity-50" onClick={() => alert(`View ${td.name} specs`)}>
-                            <FontAwesomeIcon icon={faEye} />
-                        </span>
-                    </Tooltip>
-                </div>
-            )
+    const navItem = [
+        { id: 1, icon: faGlobe, title: "Register", subMenu:
+            [
+                { value: "register_product_web", title: "Register Product", icon: faFolderOpen },
+                { value: "registered_product_web", title: "Registered Product", icon: faGlobe }
+            ]
         },
-        { label: 'Terms Url', field: 'terms_url' },
-        { label: 'Scraped Title', field: 'title' },
-        { label: 'Scraped Price', field: 'price' },
-        { 
-            label: 'Specifications', 
-            field: 'specifications',
-            render: (td) => (
-                <div className='text-center'>
-                    <Tooltip color="primary" content="View Specifications">
-                        <span className="text-lg text-primary cursor-pointer active:opacity-50" onClick={() => alert(`View ${td.name} specs`)}>
-                            <FontAwesomeIcon icon={faEye} />
-                        </span>
-                    </Tooltip>
-                </div>
-            )
+        { id: 2, value: "scrape", title: "Scrape", icon: faGears },
+        { id: 3, icon: faFolderClosed, title: "View Data", subMenu:
+            [
+                { value: "icp", title: "ICP", icon: faListCheck },
+                { value: "non_icp", title: "Non-ICP", icon: faListCheck }
+            ]
         },
-        { label: 'Date Scraped', field: 'date_scraped' },
-        { 
-            label: 'Action', 
-            field: 'action',
-            render: (td) => (
-                <div className='flex gap-1'>
-                    <Tooltip color="success" content="Scrape">
-                        <span className="text-lg text-success cursor-pointer active:opacity-50" onClick={() => alert(`Editing ${td.name}`)}>
-                            <FontAwesomeIcon icon={faPenToSquare} />
-                        </span>
-                    </Tooltip>
-                    
-                    <Tooltip color="danger" content="Delete">
-                        <span className="text-lg text-danger cursor-pointer active:opacity-50" onClick={() => alert(`Deleting ${td.name}`)}>
-                            <FontAwesomeIcon icon={faTrashCan} />
-                        </span>
-                    </Tooltip>
-                </div>
-            )
-        },
+        { id: 4, value: "downloads", title: "Downloads", icon: faDownload },
     ];
 
-    const scrapedDataTableData = [
-        // must always gave id prop, it is used as key
-        { id: 1, code: 1, name: 'John Doe', url: 28, terms_url: 'john.example.com', title: 'title', price: 'price', specifications: 'specifications', date_scraped: 'date_scraped' },
-        { id: 2, code: 2, name: 'Jane Smith', url: 34, terms_url: 'jane.example.com', title: 'title', price: 'price', specifications: 'specifications', date_scraped: 'date_scraped' },
-        { id: 3, code: 3, name: 'Sam Green', url: 25, terms_url: 'sam.example.com', title: 'title', price: 'price', specifications: 'specifications', date_scraped: 'date_scraped' },
-    ];
+    // handle dynamic component rendering
+    const handleDynamicComponent = (value) => {
+            
+        switch (value) {
+            case 'register_product_web':
+                return <RegisterProductWebsite />;
+            case 'registered_product_web':
+                return <RegisteredProductWebsite />;
+            case 'scrape':
+                return <Scrape />;
+            case 'icp':
+                return <ViewIcpData />;
+            case 'non_icp':
+                return <ViewNonIcpData />;
+            case 'downloads':
+                return <Downloads />;
+            default:
+                return <Card className="py-12"><CardBody>Component Not Found!</CardBody></Card>;
+        }
 
-    // registered dummy datas
-    const registeredTableHeader = [
-        // change the field values, it needs to be identical with the column name from DB
-        { label: 'Product Code', field: 'code' },
-        { label: 'Product Name', field: 'name' },
-        { label: 'Url', field: 'url' },
-        { label: 'Terms Url', field: 'terms_url' },
-        { label: 'Title', field: 'title' },
-        { label: 'Price', field: 'price' },
-        { label: 'Outlet', field: 'outlet' },
-        {
-          label: 'Status',
-          key: 'status',
-          render: (td) => {
-            const statusStyles = {
-                active: "success",
-                inactive: "danger",
-                pending: "warning",
-            };
-      
-            return (
-              <Chip className="capitalize" color={statusStyles[td.status]} size="sm" variant="flat">
-                  {td.status}
-              </Chip>
-            );
-          }
-        },
-        { label: 'Registered Date', field: 'registered' },
-        { 
-            label: 'Action', 
-            field: 'action',
-            render: (td) => (
-                <div className='flex gap-1'>
-                    <Tooltip color="success" content="Update">
-                        <span className="text-lg text-success cursor-pointer active:opacity-50" onClick={() => alert(`Editing ${td.name}`)}>
-                            <FontAwesomeIcon icon={faPenToSquare} />
-                        </span>
-                    </Tooltip>
-                    
-                    <Tooltip color="danger" content="Delete">
-                        <span className="text-lg text-danger cursor-pointer active:opacity-50" onClick={() => alert(`Deleting ${td.name}`)}>
-                            <FontAwesomeIcon icon={faTrashCan} />
-                        </span>
-                    </Tooltip>
-                </div>
-            )
-        },
-    ];
+    }
 
-    const registeredTableData = [
-        // must always gave id prop, it is used as key
-        { id: 1, code: 1, name: 'John Doe', url: 28, terms_url: 'john.example.com', title: 'title', price: 'price', outlet: 'outlet', status: 'active', registered: 'registered' },
-        { id: 2, code: 2, name: 'Jane Smith', url: 34, terms_url: 'jane.example.com', title: 'title', price: 'price', outlet: 'outlet', status: 'inactive', registered: 'registered' },
-        { id: 3, code: 3, name: 'Sam Green', url: 25, terms_url: 'sam.example.com', title: 'title', price: 'price', outlet: 'outlet', status: 'pending', registered: 'registered' },
-    ];
+    useEffect(() => {
+        handleDynamicComponent(active);
+    }, [active]);
 
     return (
         <AuthenticatedLayout
@@ -155,51 +83,7 @@ export default function Scraper() {
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="overflow-hidden shadow-sm sm:rounded-lg">
 
-                        <SidebarLayout
-                            titleState={setTitle}
-                        >
-
-                            <Tab 
-                                key="Scraped Data" 
-                                title={
-                                    <>
-                                        <FontAwesomeIcon icon={faListCheck} className="mr-2" /> View Data
-                                    </>
-                                }
-                            >
-                                <TableComp tableHeader={scrapedDataTableHeader} tableData={scrapedDataTableData}/>
-                            </Tab>
-                            <Tab 
-                                key="Scrape"
-                                title={
-                                    <>
-                                        <FontAwesomeIcon icon={faGears} className="mr-2" /> Scrape
-                                    </>
-                                }
-                            >
-                                <Scrape /> 
-                            </Tab>
-                            <Tab 
-                                key="Registered Website"
-                                title={
-                                    <>
-                                        <FontAwesomeIcon icon={faGlobe} className="mr-2" /> Websites
-                                    </>
-                                }
-                            >
-                                <TableComp tableHeader={registeredTableHeader} tableData={registeredTableData}/>
-                            </Tab>
-                            <Tab 
-                                key="Register Product Website"
-                                title={
-                                    <>
-                                        <FontAwesomeIcon icon={faFolderOpen} className="mr-2" /> Register
-                                    </>
-                                }
-                            >
-                                <Register/>
-                            </Tab>
-                        </SidebarLayout>
+                        <SideNav setTitle={setTitle} setActive={setActive} active={active} navItem={navItem} handleDynamicComponent={handleDynamicComponent} />
                         
                     </div>
                 </div>
