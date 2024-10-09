@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\WebScraperServices;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -10,20 +11,33 @@ use Inertia\Response;
 
 class WebScraperController extends Controller
 {
+
+    protected $webScraperServices;
+
+    public function __construct(WebScraperServices $webScraperServices)
+    {
+        $this->webScraperServices = $webScraperServices;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return Inertia::render('Scraper');
+        $products = $this->webScraperServices->getIcpProductsAsSelectOption();
+        return Inertia::render('Scraper')->with([
+            'products' => $products
+        ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function createProductWebsite(Request $request)
     {
-        //
+        dd($request->all());
+        $products = $this->webScraperServices->registerProductWebsite($request->all());
+        return response()->json(['success' => 'Product Website saved successfully!']);
     }
 
     /**

@@ -1,40 +1,74 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import PrimaryButton from '@/Components/PrimaryButton';
-import { Card, Tooltip } from '@nextui-org/react';
+import { Autocomplete, AutocompleteItem, Card, Tooltip } from '@nextui-org/react';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import SelectAutocomplete from '@/Components/SelectAutocomplete';
 
-export default function RegisterProductWebsite({ producsts }) {
+export default function RegisterProductWebsite({ products }) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    // console.log(products);
-    
+    console.log(products);
 
     const { data, setData, post, processing, errors, reset } = useForm({
+        product_id: '',
+        outlet_id: '',
         terms_url: '',
-        btn_xpath: '',
         product_url: '',
         product_title_xpath: '',
         product_price_xpath: '',
-        password: '',
-        password: '',
-        password: '',
+        btn_xpath: '',
+        product_url: '',
     });
 
-    const [showSpecs, setShowSpecs] = useState(false); // Initially hidden - product specs
-    const handleProductChange = (value) => {        
-        if(value === ""){
-            setShowSpecs(false);
-        } else {
-            setShowSpecs(true);
-        }
-    };
     const [showRegForm, setShowRegForm] = useState(false); // Initially hidden - registration form
     const handleRegForm = (isChecked) => {
         setShowRegForm(isChecked);
     };
+
+    const outletItems = [
+        {label: "Outlet 1", value: "1"},
+        {label: "Outlet 2", value: "2"},
+        {label: "Outlet 3", value: "3"},
+    ]
+
+    const [productKey, setProductKey] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+
+    const handleSelectProduct = (e) => {
+        setProductKey(e);
+    };
+
+    useEffect(()=>{
+
+        console.log('productKey: ', productKey);
+
+        if(productKey){
+            products.map((product)=>{
+                if(productKey == product.id){
+                    console.log('inside ifs: ', product); 
+                    return setSelectedProduct(product);                  
+                } else {
+                }
+            })
+        } else {
+            setSelectedProduct(null);
+        }
+        console.log('SelectedProduct: ', selectedProduct);
+        
+    }, [ productKey ])
+
+    const handleSubmit = (e) => {
+        
+        post(route('scraper.create'), {
+            onSuccess: (res) => {
+                console.log(res);
+            }
+        });
+        
+    }
 
     return (
         <>
@@ -58,30 +92,17 @@ export default function RegisterProductWebsite({ producsts }) {
 
                             {/* Product Inputs Wrapper */}
                             <div id='register_input_wrapper'>
-
-                                <div className="">
-                                    <label for="country" className="block text-sm font-medium leading-6 text-gray-900">Register Product</label>
-                                    <div className="mt-2">
-                                        <select onChange={(e)=>handleProductChange(e.target.value)} id="country" name="country" autoComplete="country-name" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                            <option value="">Select</option>
-                                            <option value="1">United States</option>
-                                            <option value="2">Canada</option>
-                                            <option value="3">Mexico</option>
-                                        </select>
-                                    </div>
-                                </div>
-
-                                <div className="">
-                                    <label for="country" className="block text-sm font-medium leading-6 text-gray-900">Register Product</label>
-                                    <div className="mt-2">
-                                        <select onChange={(e)=>handleProductChange(e.target.value)} id="country" name="country" autoComplete="country-name" className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:max-w-xs sm:text-sm sm:leading-6">
-                                            <option value="">Select</option>
-                                            <option value="1">United States</option>
-                                            <option value="2">Canada</option>
-                                            <option value="3">Mexico</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                
+                                <SelectAutocomplete
+                                    items={products}
+                                    label="Select Product"
+                                    setProductKey={handleSelectProduct}
+                                />
+                                
+                                <SelectAutocomplete
+                                    items={outletItems}
+                                    label="Select Outlet"
+                                />
 
                             
                                 <TextInput
@@ -193,23 +214,28 @@ export default function RegisterProductWebsite({ producsts }) {
                             </div>
 
                             {/* Product Specifications Wrapper */}
-                            <table id="icp_product_specs_div" className={`mt-4 border-opacity-5 ${showSpecs ? "" : "hidden"}`}>
+                            {
+                                selectedProduct &&
+                                <table id="icp_product_specs_div" className="mt-4 w-full">
 
-                                {/* map over specs data here */}
-                                <tr>
-                                    <td>ICP Product Specifications</td>
-                                </tr>
-                                <tr>
-                                    <td>ICP Product Specifications</td>
-                                </tr>
-                                <tr>
-                                    <td>ICP Product Specifications</td>
-                                </tr>
-                                <tr>
-                                    <td>ICP Product Specifications</td>
-                                </tr>
+                                    {
+                                        selectedProduct.pspecs.split('\r\n').map((spec, index) => (
+                                            <tr key={index} className="border border-gray rounded">
+                                                <td className="p-1">{spec}</td>
+                                            </tr>
+                                        ))
+                                    }
+    
+                                </table>
+                            }
 
-                            </table>
+                            <div className="flex justify-end mt-4">
+                                <PrimaryButton
+                                    className='min-w-[10rem]'
+                                    onClick={handleSubmit}
+                                >Register</PrimaryButton>
+                            </div>
+                            
 
 
                         </form>
