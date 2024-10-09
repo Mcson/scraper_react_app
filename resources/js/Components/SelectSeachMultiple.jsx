@@ -50,6 +50,7 @@ const SelectSearchMultiple = ({array, label, onSelectChange, ...props }) => {
                     ]
                 }
             }}
+            aria-label="Select a product"
             >
             {array.map((item, index) => (
                 <AutocompleteItem 
