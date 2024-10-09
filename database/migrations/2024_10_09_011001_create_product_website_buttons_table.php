@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('product_website_buttons', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('registered_hh_id');
+            $table->foreign('registered_hh_id')->references('id')->on('product_websites');
+            $table->string('buttons_xpath');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('product_website_buttons');
+    }
+};
