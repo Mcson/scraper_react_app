@@ -9,6 +9,7 @@ import { useForm } from '@inertiajs/react';
 import { TimeInput } from '@nextui-org/react';
 import { useState, useEffect } from 'react';
 import InputError from '@/Components/InputError';
+import Swal from 'sweetalert2';
 
 
 export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddScheduleToggle }){
@@ -24,9 +25,9 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
     const isSubmitDisabled = !data.title || !data.frequency || !data.date || !data.time || data.products.length === 0 || isDateInvalid;
 
     const freqTypes = [
-        {key: 'daily', label: 'Daily'},
-        {key: 'weekly', label: 'Weekly'},
-        {key: 'monthly', label: 'Monthly'},
+        {key: 'Daily', label: 'Daily'},
+        {key: 'Weekly', label: 'Weekly'},
+        {key: 'Monthly', label: 'Monthly'},
     ]
 
     const items = [
@@ -45,7 +46,25 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
         // console.log(data);
        post(route('schedule.store'), {
         onSuccess: (response) => {
-            console.log(response);
+            
+            const data = response.props.flash;
+            if(data.success){
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: data.success,
+                }).then(() => {
+                    reset();
+                    setIsDateInvalid(false);
+                });
+            } else if(data.error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Something went wrong!',
+                    text: data.error,
+                });
+            }
         }
        });
     }

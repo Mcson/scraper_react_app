@@ -26,7 +26,9 @@ class ScheduleController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Schedule');
+        $data = $this->webScrapperScheduleServices->getSchedulesWithProducts();
+       
+        return Inertia::render('Schedule', ['data' => $data]);
     }
 
     /**
@@ -54,9 +56,9 @@ class ScheduleController extends Controller
         try {
             $schedule = $this->webScrapperScheduleServices->createSchedule($data);
             
-            return Redirect::back()->with(['message' => 'Successfully created a schedule.']);
-        } catch (\Exeption $e) {
-            return Redirect::back()->with(['Error' => $e->getMessage()]);
+            return Redirect::back()->with(['success' => 'Successfully created a schedule.']);
+        } catch (\Exception $e) {
+            return Redirect::back()->with(['error' => $e->getMessage()]);
         }
         // dd($request->all());
     }

@@ -1,8 +1,8 @@
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell} from "@nextui-org/react";
 
-export default function TableComp({ tableHeader, tableData }) {
+export default function TableComp({ tableHeader, tableData, ...props }) {
   return (
-    <Table aria-label="Example static collection table">
+    <Table aria-label="Example static collection table" {...props}>
       <TableHeader>
 
         {
