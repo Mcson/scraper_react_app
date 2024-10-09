@@ -9,13 +9,13 @@ const SelectSearchMultiple = ({array, label, onSelectChange, ...props }) => {
     const [selectedItems, setSelectedItems] = useState([]);
 
     const isItemSelected = (item) => {
-        return selectedItems.some(selectedItem => selectedItem.id === item.id);
+        return selectedItems.some(selectedItem => selectedItem.pcode === item.pcode);
     };
       
     const handleSelect = (item) => {
         if (isItemSelected(item)) {
             // If the item is already selected, remove it
-            const newSelectedItems = selectedItems.filter(selection => selection.id !== item.id);
+            const newSelectedItems = selectedItems.filter(selection => selection.pcode !== item.pcode);
             setSelectedItems(newSelectedItems);
             onSelectChange(newSelectedItems);
         } else {
@@ -53,8 +53,8 @@ const SelectSearchMultiple = ({array, label, onSelectChange, ...props }) => {
             >
             {array.map((item, index) => (
                 <AutocompleteItem 
-                    key={item.id} 
-                    value={item.id} 
+                    key={item.pcode} 
+                    value={item.pcode} 
                     onClick={() => handleSelect(item)}
                     endContent={
                         isItemSelected(item) && (
@@ -62,19 +62,19 @@ const SelectSearchMultiple = ({array, label, onSelectChange, ...props }) => {
                         )
                     }
                     >
-                    {item.label}
+                    {item.pname}
                 </AutocompleteItem>
             ))}
         </Autocomplete>
         <div className="flex mt-2 flex-wrap gap-2">
             {selectedItems.map((item) => (
                 <Chip 
-                    key={item.id}
+                    key={item.pcode}
                     color="primary" 
                     onClose={() => handleDeleteSelection(item)} 
 
                    >
-                {item.label}
+                {item.pname}
                 </Chip>
             ))} 
         </div> 

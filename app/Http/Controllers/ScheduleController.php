@@ -2,14 +2,25 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\WebscrapperScheduleServices;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ScheduleController extends Controller
 {
+
+    protected $webScrapperScheduleServices;
+
+    public function __construct(WebscrapperScheduleServices $webScrapperScheduleServices)
+    {
+        $this->webScrapperScheduleServices = $webScrapperScheduleServices;
+    }
+    
+
     /**
      * Display a listing of the resource.
      */
@@ -32,6 +43,22 @@ class ScheduleController extends Controller
     public function store(Request $request)
     {
         //
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'frequency' => 'required|string',
+            'date' => 'required',
+            'time' => 'required',
+            'products' => 'required|array',
+        ]);
+
+        try {
+            $schedule = $this->webScrapperScheduleServices->createSchedule($data);
+            
+            return Redirect::back()->with(['message' => 'Successfully created a schedule.']);
+        } catch (\Exeption $e) {
+            return Redirect::back()->with(['Error' => $e->getMessage()]);
+        }
+        // dd($request->all());
     }
 
     /**
