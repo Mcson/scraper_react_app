@@ -22,7 +22,7 @@
 import { Button } from "@nextui-org/react";
 export default function PrimaryButton({ className = '', isLoading, isDisabled, children, ...props }) {
     return (
-        <Button color="primary" size="sm" radius="sm" isLoading={isLoading} isDisabled={isDisabled} className={`font-semibold tracking-wide uppercase` + className} {...props}>
+        <Button color="primary" size="sm" radius="sm" isLoading={isLoading} isDisabled={isDisabled} className={`font-semibold tracking-wide uppercase ` + className} {...props}>
             {children}
         </Button>
     );

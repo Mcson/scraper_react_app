@@ -12,7 +12,9 @@ import ViewNonIcpData from './ViewNonIcpData';
 import Downloads from './Downloads';
 import SideNav from '@/Components/SideNav';
 
-export default function Scraper() {
+export default function Scraper({ products }) {
+
+    // console.log(products);    
 
     const [active, setActive] = useState("register_product_web");
     const [title, setTitle] = useState("Register Product");
@@ -39,7 +41,7 @@ export default function Scraper() {
             
         switch (value) {
             case 'register_product_web':
-                return <RegisterProductWebsite />;
+                return <RegisterProductWebsite products={products} />;
             case 'registered_product_web':
                 return <RegisteredProductWebsite />;
             case 'scrape':
