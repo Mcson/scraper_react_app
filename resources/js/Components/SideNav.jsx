@@ -2,7 +2,7 @@ import React from "react";
 import {Accordion, AccordionItem} from "@nextui-org/react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export default function SideNav1({ setTitle, setActive, active, navItem, handleDynamicComponent }) {
+export default function SideNav({ setTitle, setActive, active, navItem, handleDynamicComponent }) {
   const itemClasses = {
     title: "text-default-500 text-sm",
     indicator: "text-sm",

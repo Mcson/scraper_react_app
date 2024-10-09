@@ -25,8 +25,8 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/products', [ProductsController::class, 'index'])->middleware(['auth', 'verified'])->name('products');
-Route::get('/register/website', [ProductsWebsiteController::class, 'index'])->middleware(['auth', 'verified'])->name('register.website');
+// Route::get('/products', [ProductsController::class, 'index'])->middleware(['auth', 'verified'])->name('products');
+// Route::get('/register/website', [ProductsWebsiteController::class, 'index'])->middleware(['auth', 'verified'])->name('register.website');
 Route::get('/scraper', [WebScraperController::class, 'index'])->middleware(['auth', 'verified'])->name('scraper');
 Route::get('/schedule', [ScheduleController::class, 'index'])->middleware(['auth', 'verified'])->name('schedule');
 
@@ -37,6 +37,9 @@ Route::middleware('auth')->group(function () {
 
     // WEBSCRAPPERSCHEDULE
     Route::post('/create-schedule', [ScheduleController::class, 'store'])->name('schedule.store');
+
+    // WEBSCRAPER
+    Route::post('/create-product-schedule', [WebScraperController::class, 'createProductWebsite'])->name('scraper.create');
 });
 
 require __DIR__.'/auth.php';
