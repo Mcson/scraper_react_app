@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class WebscrapperSchedule extends Model
 {
     use HasFactory;
-    protected $fillable = ['title', 'date', 'time_hh', 'time_mm'];
+    protected $fillable = ['title', 'frequency', 'date', 'time_hh', 'time_mm'];
 
     public function products()
     {
