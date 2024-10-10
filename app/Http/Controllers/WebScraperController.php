@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
+use Illuminate\Http\Request;
 
 class WebScraperController extends Controller
 {
@@ -35,7 +36,7 @@ class WebScraperController extends Controller
      */
     public function createProductWebsite(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         $products = $this->webScraperServices->registerProductWebsite($request->all());
         return response()->json(['success' => 'Product Website saved successfully!']);
     }
