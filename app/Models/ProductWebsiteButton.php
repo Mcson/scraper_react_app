@@ -13,7 +13,6 @@ class ProductWebsiteButton extends Model
 
     protected $fillable = [
         'registered_hh_id',
-        'label',
         'buttons_xpath',
     ];
 }
