@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
 
     // WEBSCRAPPERSCHEDULE
     Route::post('/create-schedule', [ScheduleController::class, 'store'])->name('schedule.store');
+    Route::delete('/delete-product-schedule/{id}', [ScheduleController::class, 'destroy'])->name('product.destroy');
 
     // WEBSCRAPER
     Route::post('/create-product-schedule', [WebScraperController::class, 'createProductWebsite'])->name('scraper.create');

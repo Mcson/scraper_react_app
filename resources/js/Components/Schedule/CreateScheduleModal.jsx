@@ -12,7 +12,7 @@ import InputError from '@/Components/InputError';
 import Swal from 'sweetalert2';
 
 
-export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddScheduleToggle }){
+export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddScheduleToggle, scheduleData = null , isEditing = false }){
     const { data, setData, post, processing, errors, reset, setError } = useForm({
         title: '',
         frequency: '',
@@ -70,7 +70,16 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
     }
 
     useEffect(() => {
-        if(!isAddSheduleModalOpen){
+        console.log(scheduleData);
+        if( isAddSheduleModalOpen && isEditing && scheduleData){
+            // setData({
+            //     title: scheduleData.title || '',
+            //     frequency: scheduleData.frequency || '',
+            //     date: scheduleData.date || '',
+            //     // time: scheduleData.time || '',
+            //     products: scheduleData.products || []
+            // });
+        }else if(!isAddSheduleModalOpen){
             reset();
             setIsDateInvalid(false); 
             Object.keys(errors).forEach(key => setError(key, ''));

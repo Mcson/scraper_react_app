@@ -57,28 +57,51 @@ class WebscrapperScheduleServices
 
     public function getSchedulesWithProducts()
     {
-        $schedules = WebscrapperSchedule::with('products')
-                                        ->select('id', 'title', 'frequency', 'date', 'time_hh', 'time_mm')
-                                        ->orderBy('created_at', 'desc')
-                                        ->get();
+        // Retrieve paginated schedules with related products
+        $products = WebscrapperScheduleProduct::with('schedule')
+        ->orderBy('created_at', 'desc')
+        ->paginate(10);  // Keep the pagination
 
-        // initialize an array for the formatted date
-        $tableData = [];
+        $products->getCollection()->transform(function ($product) {
+            return [
+                'id' => $product->id,
+                'pcode' => $product->pcode,
+                'frequency' => $product->schedule->frequency,
+                'title' => $product->schedule->title,
+                'date' => Carbon::parse($product->schedule->date)->format('F j, Y'),
+                'time' => str_pad($product->schedule->time_hh, 2, '0', STR_PAD_LEFT) . ':' . str_pad($product->schedule->time_mm, 2, '0', STR_PAD_LEFT),
+            ];
+        });
 
-        // loop through each schedule and product
-        foreach($schedules as $schedule) {
-            foreach ($schedule->products as $product) {
-                $tableData[] = [
-                    'id' => $product->id,
-                    'pcode' => $product->pcode,
-                    'frequency' => $schedule->frequency,
-                    'title' => $schedule->title,
-                    'date' => Carbon::parse($schedule->date)->format('F j, Y'),
-                    'time' => str_pad($schedule->time_hh, 2, '0', STR_PAD_LEFT) . ':' . str_pad($schedule->time_mm, 2, '0', STR_PAD_LEFT),
-                ];
-            }
-        }
-
-        return $tableData;
+        return $products; 
     }
+
+    public function deleteProduct($productId)
+    {
+        DB::beginTransaction();
+        try {
+            // find the product by id
+            $product = WebscrapperScheduleProduct::findOrFail($productId);
+
+            // get the schedule id before deleting the product
+            $scheduleId = $product->schedule_id;
+
+            // delete the product
+            $product->delete();
+
+            // check if there are any remaining products associated with this schedule
+            $remainingProducts = WebscrapperScheduleProduct::where('schedule_id', $scheduleId)->count();
+
+            if($remainingProducts === 0) {
+                WebscrapperSchedule::where('id', $scheduleId)->delete();
+            }
+            DB::commit();
+            return ['success' => true, 'message' => 'Product deleted successfully.'];
+        } catch (\Exception $e) {
+            DB::rollback();
+            return ['success' => false, 'message' => 'Error deleting product: ' . $e->getMessage()];
+        }
+    }
+
+
 }

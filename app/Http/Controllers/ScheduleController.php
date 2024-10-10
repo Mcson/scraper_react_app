@@ -27,7 +27,7 @@ class ScheduleController extends Controller
     public function index()
     {
         $data = $this->webScrapperScheduleServices->getSchedulesWithProducts();
-       
+        
         return Inertia::render('Schedule', ['data' => $data]);
     }
 
@@ -93,5 +93,10 @@ class ScheduleController extends Controller
     public function destroy(string $id)
     {
         //
+        $response = $this->webScrapperScheduleServices->deleteProduct($id);
+        if ($response['success']){
+            return Redirect::back()->with(['success' => $response['message']]);
+        }
+        return Redirect::back()->with(['error' => $response['message']]);
     }
 }
