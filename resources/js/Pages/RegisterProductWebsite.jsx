@@ -19,9 +19,8 @@ export default function RegisterProductWebsite({ products }) {
         product_url: '',
         product_title_xpath: '',
         product_price_xpath: '',
-        btn_xpath: '',
-        specs_xpath: '',
-        specs_label: '',
+        btn_xpaths: [],
+        specs_xpaths: [],
     });
 
     const [showRegForm, setShowRegForm] = useState(false); // Initially hidden - registration form
@@ -40,7 +39,40 @@ export default function RegisterProductWebsite({ products }) {
     const [outletKey, setOutletKey] = useState(null);
     const [specsLabelKey, setSpecsLabelKey] = useState(null);
     const [specsLabel, setSpecsLabel] = useState([{label: "Select", value: "0"}]);
+    const [currentBtnXpath, setCurrentBtnXpath] = useState('');
+    const [currentSpecsXpath, setCurrentSpecsXpath] = useState('');
 
+    // Handle adding to the btn_xpaths array and resetting the input
+    const handleAddBtnXpath = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            if (currentBtnXpath.trim() !== '') {
+                // Add the current input value to the btn_xpaths array
+                setData('btn_xpaths', [...data.btn_xpaths, currentBtnXpath]);
+                // Clear the input field
+                setCurrentBtnXpath('');
+            }
+        }
+    };
+
+    // Handle adding the object to specs_xpaths array
+    const handleAddSpecsXpath = () => {
+        if (currentSpecsXpath.trim() !== '' && specsLabelKey.trim() !== '') {
+            // Add both the specs_label and specs_xpath as an object
+            setData('specs_xpaths', [
+                ...data.specs_xpaths, 
+                { specs_label: specsLabelKey, specs_xpath: currentSpecsXpath }
+            ]);
+
+            // Reset both input fields after adding
+            setCurrentSpecsXpath(''); // Clear local state for specs_xpath
+            setSpecsLabelKey(''); // Clear local state for the label
+        }
+
+        // console.log();
+        
+    };
     const handleSelectProduct = (e) => {
         setProductKey(e);
     };
@@ -188,41 +220,66 @@ export default function RegisterProductWebsite({ products }) {
                                     onChange={(e) => setData('product_price_xpath', e.target.value)}
                                 />
 
-                                <TextInput
-                                    id="btn_xpath"
-                                    name="btn_xpath"
-                                    value={data.btn_xpath}
-                                    autoComplete=""
-                                    label="Product Button Xpath"
-                                    classNames = {{
-                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                    }}
-                                    onChange={(e) => setData('btn_xpath', e.target.value)}
-                                />
+                                <div>
+                                    <TextInput
+                                        id="btn_xpath"
+                                        name="btn_xpath"
+                                        autoComplete=""
+                                        label="Product Button Xpath"
+                                        classNames={{
+                                            inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                        }}
+                                        value={currentBtnXpath} // Controlled input
+                                        onChange={(e) => setCurrentBtnXpath(e.target.value)}
+                                        onKeyDown={handleAddBtnXpath} // Handle keypress for Enter
+                                    />
+                                    {/* Optionally display the current array of btn_xpaths */}
+                                    <ul>
+                                        {data.btn_xpaths.map((xpath, index) => (
+                                            <li key={index}>{xpath}</li>
+                                        ))}
+                                    </ul>
+                                </div>
 
                                 <div className="flex gap-1">
+
                                     <div className="flex-1">
                                         <TextInput
                                             id="specs_xpath"
                                             name="specs_xpath"
-                                            value={data.specs_xpath}
+                                            value={currentSpecsXpath}
                                             autoComplete=""
                                             label="Product Specs Xpath"
-                                            classNames = {{
+                                            classNames={{
                                                 inputWrapper: "group-data-[focus=true]:border-primary-400"
                                             }}
-                                            onChange={(e) => setData('specs_xpath', e.target.value)}
+                                            onChange={(e) => setCurrentSpecsXpath(e.target.value)}
+                                            // onKeyDown={handleAddSpecsXpath} // Handle keypress for Enter
                                         />
                                     </div>
                                     <div>
                                         <SelectAutocomplete
-                                            items={specsLabel}
+                                            items={specsLabel} // Assuming specsLabel is an array of labels
                                             label="Label"
-                                            setValue={setSpecsLabelKey}
+                                            setValue={setSpecsLabelKey} // Set the selected label
                                             classNames="max-w-[8rem]"
+                                            // onKeyDown={handleAddSpecsXpath} // Handle keypress for Enter
                                         />
                                     </div>
+
                                 </div>
+                                    {/* Button to add the spec to the array */}
+                                    <button type="button" onClick={handleAddSpecsXpath}>
+                                        Add Spec
+                                    </button>
+                                    {/* Optionally display the current array of specs_xpaths */}
+                                    <ul>
+                                        {data.specs_xpaths.map((xpath, index) => (
+                                            <li key={index}>
+                                                <strong>Label:</strong> {xpath.specs_label}, <strong>Xpath:</strong> {xpath.specs_xpath}
+                                            </li> 
+                                        ))}
+                                    </ul>
 
                             </div>
 
