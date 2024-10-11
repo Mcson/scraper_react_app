@@ -193,7 +193,7 @@ export default function RegisterProductWebsite({ products }) {
                                     name="btn_xpath"
                                     value={data.btn_xpath}
                                     autoComplete=""
-                                    label="Button Xpath"
+                                    label="Product Button Xpath"
                                     classNames = {{
                                         inputWrapper: "group-data-[focus=true]:border-primary-400"
                                     }}
@@ -207,7 +207,7 @@ export default function RegisterProductWebsite({ products }) {
                                             name="specs_xpath"
                                             value={data.specs_xpath}
                                             autoComplete=""
-                                            label="Product Specs"
+                                            label="Product Specs Xpath"
                                             classNames = {{
                                                 inputWrapper: "group-data-[focus=true]:border-primary-400"
                                             }}
@@ -217,7 +217,7 @@ export default function RegisterProductWebsite({ products }) {
                                     <div>
                                         <SelectAutocomplete
                                             items={specsLabel}
-                                            label="Specs"
+                                            label="Label"
                                             setValue={setSpecsLabelKey}
                                             classNames="max-w-[8rem]"
                                         />
