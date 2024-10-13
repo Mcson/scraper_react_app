@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
 import PrimaryButton from '@/Components/PrimaryButton';
-import { Card, Tooltip } from '@nextui-org/react';
+import { Autocomplete, AutocompleteItem, Card, Tooltip } from '@nextui-org/react';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
@@ -9,8 +9,6 @@ import SelectAutocomplete from '@/Components/SelectAutocomplete';
 
 export default function RegisterProductWebsite({ products }) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
-
-    console.log(products);
 
     const { data, setData, post, processing, errors, reset } = useForm({
         product_id: '',
@@ -37,10 +35,11 @@ export default function RegisterProductWebsite({ products }) {
     const [productKey, setProductKey] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [outletKey, setOutletKey] = useState(null);
-    const [specsLabelKey, setSpecsLabelKey] = useState(null);
-    const [specsLabel, setSpecsLabel] = useState([{label: "Select", value: "0"}]);
+    // const [specsLabelKey, setSpecsLabelKey] = useState(null);
+    const [specsLabel, setSpecsLabel] = useState([{label: "Select", value: "0"}]); // default specs label select options
     const [currentBtnXpath, setCurrentBtnXpath] = useState('');
     const [currentSpecsXpath, setCurrentSpecsXpath] = useState('');
+    const [currentSpecsLabel, setCurrentSpecsLabel] = useState('');
 
     // Handle adding to the btn_xpaths array and resetting the input
     const handleAddBtnXpath = (e) => {
@@ -56,21 +55,37 @@ export default function RegisterProductWebsite({ products }) {
         }
     };
 
+    // handle specs label
+    const handleSpecsLabel = (key) => {
+        specsLabel?.map((item)=>{
+            if(item.value == key){
+                setCurrentSpecsLabel(item.label);
+            }
+        })
+    }
+
     // Handle adding the object to specs_xpaths array
     const handleAddSpecsXpath = () => {
-        if (currentSpecsXpath.trim() !== '' && specsLabelKey.trim() !== '') {
+        if (currentSpecsXpath.trim() !== '' && currentSpecsLabel.trim() !== '') {
             // Add both the specs_label and specs_xpath as an object
             setData('specs_xpaths', [
                 ...data.specs_xpaths, 
-                { specs_label: specsLabelKey, specs_xpath: currentSpecsXpath }
+                { specs_label: currentSpecsLabel, specs_xpath: currentSpecsXpath }
             ]);
 
             // Reset both input fields after adding
             setCurrentSpecsXpath(''); // Clear local state for specs_xpath
-            setSpecsLabelKey(''); // Clear local state for the label
-        }
+            setCurrentSpecsLabel(''); // Clear local state for the label
 
-        // console.log();
+            // console.log("handleAddSpecsXpath if statement");
+            
+        } 
+        // else {
+        //     console.log("handleAddSpecsXpath outside if statement");
+        // }
+
+        // console.log(data);
+        // console.log("specs-label: ", currentSpecsXpath + ' ' + currentSpecsLabel);
         
     };
     const handleSelectProduct = (e) => {
@@ -79,12 +94,12 @@ export default function RegisterProductWebsite({ products }) {
 
     useEffect(()=>{
 
-        console.log('productKey: ', productKey);
+        // console.log('productKey: ', productKey);
 
         if(productKey){
             products.map((product)=>{
                 if(productKey == product.id){
-                    console.log('inside ifs: ', product); 
+                    // console.log('inside ifs: ', product); 
                     setSelectedProduct(product);   
                     setData('product_id', productKey);
 
@@ -99,30 +114,33 @@ export default function RegisterProductWebsite({ products }) {
                         });
 
                     setSpecsLabel(labels);
-                    console.log("labels: ",labels);
+                    // console.log("labels: ",labels);
                     
                 }
             })
         } else {
             setSelectedProduct(null);
+            setSpecsLabel([{label: "Select", value: "0"}]);
         }
 
         if(outletKey){
             setData('outlet_id', outletKey);
+            // console.log("outlet_id: ",outletKey);
         }
 
-        if(specsLabelKey){
-            // Find label by value
-            const findLabelByValue = (value) => {
-                const foundItem = specsLabel.find(item => item.value === value);
-                return foundItem ? foundItem.label : 'Label not found';
-            };
-            setData('specs_label', findLabelByValue(specsLabelKey));
-        }
+        // if(currentSpecsLabel){
+        //     // Find label by value
+        //     const findLabelByValue = (key) => {
+        //         const foundItem = specsLabel.find(item => item.value === key);
+        //         return foundItem ? foundItem.label : 'Label not found';
+        //     };
+        //     setData('specs_label', findLabelByValue(currentSpecsLabel));
+        // }
 
-        console.log('SelectedProduct: ', selectedProduct);
+        // console.log('SelectedProduct: ', selectedProduct);
         
-    }, [ productKey, outletKey, specsLabelKey ])
+    }, [ productKey, outletKey ])
+    // }, [ productKey, outletKey, currentSpecsLabel ])
 
     const handleSubmit = (e) => {
         
@@ -258,13 +276,25 @@ export default function RegisterProductWebsite({ products }) {
                                         />
                                     </div>
                                     <div>
-                                        <SelectAutocomplete
-                                            items={specsLabel} // Assuming specsLabel is an array of labels
+
+                                        <Autocomplete 
+                                            variant='bordered'
+                                            defaultItems={specsLabel}
+                                            size='sm'
                                             label="Label"
-                                            setValue={setSpecsLabelKey} // Set the selected label
-                                            classNames="max-w-[8rem]"
-                                            // onKeyDown={handleAddSpecsXpath} // Handle keypress for Enter
-                                        />
+                                            inputProps={{
+                                                classNames: {
+                                                    inputWrapper: [
+                                                    "group-data-[focus=true]:border-primary-400",
+                                                    "data-[focus-visible=true]:border-primary-400",
+                                                    "data-[open=true]:border-primary-400", "max-w-[8rem]"
+                                                    ]
+                                                }
+                                            }}
+                                            onSelectionChange={(e)=>handleSpecsLabel(e)}
+                                        >
+                                            {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
+                                        </Autocomplete>
                                     </div>
 
                                 </div>

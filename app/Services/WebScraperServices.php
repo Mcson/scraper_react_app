@@ -65,19 +65,29 @@ class WebScraperServices
             'icp_product' => "default",
             'created_at' => now(),
         ]);
+
+        // save multiple btn_xpath
+        foreach ($data["btn_xpaths"] as $btn_xpath) {
         
-        $newBtnXpath = ProductWebsiteButton::create([
-            'registered_hh_id' => $newProductWebsite->id,
-            'buttons_xpath' => $data["btn_xpath"],
-            'created_at' => now(),
-        ]);
+            $newBtnXpath = ProductWebsiteButton::create([
+                'registered_hh_id' => $newProductWebsite->id,
+                'buttons_xpath' => $btn_xpath,
+                'created_at' => now(),
+            ]);
+
+        }
+
+        // save multiple specs_xpath
+        foreach ($data["specs_xpaths"] as $value) {
         
-        $newSpecsXpath = ProductWebsiteSpecification::create([
-            'registered_hh_id' => $newProductWebsite->id,
-            'label' => $data["specs_label"],
-            'specs_xpath' => $data["specs_xpath"],
-            'created_at' => now(),
-        ]);
+            $newSpecsXpath = ProductWebsiteSpecification::create([
+                'registered_hh_id' => $newProductWebsite->id,
+                'label' => $value["specs_label"],
+                'specs_xpath' => $value["specs_xpath"],
+                'created_at' => now(),
+            ]);
+
+        }
 
         return response()->json(['success' => 'Product Website saved successfully!']);
     }
