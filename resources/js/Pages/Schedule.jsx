@@ -1,58 +1,50 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
-import { Head } from '@inertiajs/react';
-import PlusButton from '@/Components/PlusButton';
+import { Head, router } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarDays, faPlus, faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDays, faPlus } from '@fortawesome/free-solid-svg-icons';
 import PrimaryButton from '@/Components/PrimaryButton';
 import SidebarLayout from '@/Components/SidebarLayout';
 import {Tab, Card, CardBody} from "@nextui-org/react";
-import TableComp from '@/Components/TableComp';
 import { useState, useEffect } from 'react';
 import CreateScheduleModal from '@/Components/Schedule/CreateScheduleModal';
-import { Tooltip } from '@nextui-org/react';
+import ScheduledProductsTable from '@/Components/Schedule/ScheduledProductsTable';
 
 
 export default function Schedule({data}) {
     const [isAddSheduleModalOpen, setAddSheduleModalOpen] = useState(false);
+    const [selectedSchedule, setSelectedSchedule] = useState(null); // State for selected schedule
+    const [isEditing, setIsEditing] = useState(false); // State to track if it's in edit mode
 
     const handleAddScheduleToggle = (e) => {
+        if (isAddSheduleModalOpen) {
+            // Reset editing state and selected schedule when closing the modal
+            setIsEditing(false);
+            setSelectedSchedule(null);
+        }
         setAddSheduleModalOpen(!isAddSheduleModalOpen)
     }
 
-    useEffect(() => {
-        console.log('data:', data);
-    },[data])
+    const handleEditSchedule = (schedule) => {
+        setSelectedSchedule(schedule); // Set the selected schedule to be edited
+        setIsEditing(true); // Set editing mode to true
+        setAddSheduleModalOpen(true); // Open the modal
+
+    }
+
+    // useEffect(() => {
+    //     console.log(data)
+    // })
+
+   
 
     const [title, setTitle] = useState("Schedules");
 
-    // dummy datas with test actions
-    const tableHeader = [
-        // { label: 'ID', field: 'id' },
-        { label: 'TITLE', field: 'title' },
-        { label: 'DATE', field: 'date' },
-        { label: 'TIME(24 hours format)', field: 'time' },
-        { label: 'FREQUENCY', field: 'frequency' },
-        { label: 'PCODE', field: 'pcode' },
-        {
-            label: 'Actions', 
-            field: 'actions',
-            render: (td) => (
-                <div className='flex gap-1'>
-                    <Tooltip color="success" content="Edit">
-                        <span className="text-lg text-success cursor-pointer active:opacity-50">
-                            <FontAwesomeIcon icon={faPenToSquare} />
-                        </span>
-                    </Tooltip>
-                    
-                    <Tooltip color="danger" content="Delete">
-                        <span className="text-lg text-danger cursor-pointer active:opacity-50">
-                            <FontAwesomeIcon icon={faTrashCan} />
-                        </span>
-                    </Tooltip>
-                </div>
-            )
-        }
-    ];
+    const handlePageChange = (page) => {
+        router.visit(route('schedule', {page}), {
+            preserveScroll: true,
+            preserveState: true
+        })
+    }
 
    
     return (
@@ -86,9 +78,11 @@ export default function Schedule({data}) {
                                     }
                                 >
                                 <div className="h-full">
-                                    <Card className="max-h-[70vh] p-3">
+                                    <Card className="min-h-[70vh] p-3">
 
-                                    <TableComp removeWrapper tableHeader={tableHeader} tableData={data}/>
+                                    <ScheduledProductsTable data={data} onPageChange={handlePageChange} onEditProduct={handleEditSchedule}/>
+
+                                    
                                     </Card>
 
                                 </div>
@@ -115,6 +109,8 @@ export default function Schedule({data}) {
             <CreateScheduleModal 
                 isAddSheduleModalOpen={isAddSheduleModalOpen} 
                 handleAddScheduleToggle={handleAddScheduleToggle} 
+                scheduleData={selectedSchedule}  // Pass selected schedule data for editing
+                isEditing={isEditing}  // Pass editing mode flag
             />
         </AuthenticatedLayout>
     );
