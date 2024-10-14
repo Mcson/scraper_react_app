@@ -10,8 +10,6 @@ import SelectAutocomplete from '@/Components/SelectAutocomplete';
 export default function RegisterProductWebsite({ products }) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    console.log(products);
-
     const { data, setData, post, processing, errors, reset } = useForm({
         product_id: '',
         outlet_id: '',
@@ -19,8 +17,8 @@ export default function RegisterProductWebsite({ products }) {
         product_url: '',
         product_title_xpath: '',
         product_price_xpath: '',
-        btn_xpath: '',
-        product_url: '',
+        btn_xpaths: [],
+        specs_xpaths: [],
     });
 
     const [showRegForm, setShowRegForm] = useState(false); // Initially hidden - registration form
@@ -36,29 +34,113 @@ export default function RegisterProductWebsite({ products }) {
 
     const [productKey, setProductKey] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
+    const [outletKey, setOutletKey] = useState(null);
+    // const [specsLabelKey, setSpecsLabelKey] = useState(null);
+    const [specsLabel, setSpecsLabel] = useState([{label: "Select", value: "0"}]); // default specs label select options
+    const [currentBtnXpath, setCurrentBtnXpath] = useState('');
+    const [currentSpecsXpath, setCurrentSpecsXpath] = useState('');
+    const [currentSpecsLabel, setCurrentSpecsLabel] = useState('');
 
+    // Handle adding to the btn_xpaths array and resetting the input
+    const handleAddBtnXpath = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+
+            if (currentBtnXpath.trim() !== '') {
+                // Add the current input value to the btn_xpaths array
+                setData('btn_xpaths', [...data.btn_xpaths, currentBtnXpath]);
+                // Clear the input field
+                setCurrentBtnXpath('');
+            }
+        }
+    };
+
+    // handle specs label
+    const handleSpecsLabel = (key) => {
+        specsLabel?.map((item)=>{
+            if(item.value == key){
+                setCurrentSpecsLabel(item.label);
+            }
+        })
+    }
+
+    // Handle adding the object to specs_xpaths array
+    const handleAddSpecsXpath = () => {
+        if (currentSpecsXpath.trim() !== '' && currentSpecsLabel.trim() !== '') {
+            // Add both the specs_label and specs_xpath as an object
+            setData('specs_xpaths', [
+                ...data.specs_xpaths, 
+                { specs_label: currentSpecsLabel, specs_xpath: currentSpecsXpath }
+            ]);
+
+            // Reset both input fields after adding
+            setCurrentSpecsXpath(''); // Clear local state for specs_xpath
+            setCurrentSpecsLabel(''); // Clear local state for the label
+
+            // console.log("handleAddSpecsXpath if statement");
+            
+        } 
+        // else {
+        //     console.log("handleAddSpecsXpath outside if statement");
+        // }
+
+        // console.log(data);
+        // console.log("specs-label: ", currentSpecsXpath + ' ' + currentSpecsLabel);
+        
+    };
     const handleSelectProduct = (e) => {
         setProductKey(e);
     };
 
     useEffect(()=>{
 
-        console.log('productKey: ', productKey);
+        // console.log('productKey: ', productKey);
 
         if(productKey){
             products.map((product)=>{
                 if(productKey == product.id){
-                    console.log('inside ifs: ', product); 
-                    return setSelectedProduct(product);                  
-                } else {
+                    // console.log('inside ifs: ', product); 
+                    setSelectedProduct(product);   
+                    setData('product_id', productKey);
+
+                    // Extract labels from pspecs
+                    const labels = product.pspecs
+                        .split('\n') // Split by new lines
+                        .map(line => line.trim()) // Remove extra spaces
+                        .filter(line => line.includes(':')) // Only keep lines with ":"
+                        .map((line, index) => {
+                        const label = line.split(':')[0].trim(); // Extract label before ":"
+                        return { label, value: index + 1 }; // Assign sequential number as value
+                        });
+
+                    setSpecsLabel(labels);
+                    // console.log("labels: ",labels);
+                    
                 }
             })
         } else {
             setSelectedProduct(null);
+            setSpecsLabel([{label: "Select", value: "0"}]);
         }
-        console.log('SelectedProduct: ', selectedProduct);
+
+        if(outletKey){
+            setData('outlet_id', outletKey);
+            // console.log("outlet_id: ",outletKey);
+        }
+
+        // if(currentSpecsLabel){
+        //     // Find label by value
+        //     const findLabelByValue = (key) => {
+        //         const foundItem = specsLabel.find(item => item.value === key);
+        //         return foundItem ? foundItem.label : 'Label not found';
+        //     };
+        //     setData('specs_label', findLabelByValue(currentSpecsLabel));
+        // }
+
+        // console.log('SelectedProduct: ', selectedProduct);
         
-    }, [ productKey ])
+    }, [ productKey, outletKey ])
+    // }, [ productKey, outletKey, currentSpecsLabel ])
 
     const handleSubmit = (e) => {
         
@@ -96,12 +178,13 @@ export default function RegisterProductWebsite({ products }) {
                                 <SelectAutocomplete
                                     items={products}
                                     label="Select Product"
-                                    setProductKey={handleSelectProduct}
+                                    setValue={handleSelectProduct}
                                 />
                                 
                                 <SelectAutocomplete
                                     items={outletItems}
                                     label="Select Outlet"
+                                    setValue={setOutletKey}
                                 />
 
                             
@@ -156,60 +239,77 @@ export default function RegisterProductWebsite({ products }) {
                                 />
 
                                 <div>
-                                    <div className='text-end'>
-                                        <Tooltip color="primary" content="Add Button Xpath">
-                                            <span className="text-lg text-primary cursor-pointer active:opacity-50" onClick={() => alert(`View ${td.name} specs`)}>
-                                                <PrimaryButton isIconOnly><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
-                                            </span>
-                                        </Tooltip>
-                                    </div>
-                                    <div className='flex items-center'>
-                                        <TextInput
-                                            id="btn_xpath"
-                                            name="btn_xpath"
-                                            value={data.btn_xpath}
-                                            autoComplete=""
-                                            label="Button Xpath"
-                                            classNames = {{
-                                                inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                            }}
-                                            onChange={(e) => setData('btn_xpath', e.target.value)}
-                                        />
-                                        <Tooltip color="warning" content="Remove Xpath">
-                                            <span className="ml-1 text-lg text-warning cursor-pointer active:opacity-50" onClick={() => alert(`View ${td.name} specs`)}>
-                                                <PrimaryButton color="warning" isIconOnly><FontAwesomeIcon icon={faMinus}/></PrimaryButton>
-                                            </span>
-                                        </Tooltip>
-                                    </div>
+                                    <TextInput
+                                        id="btn_xpath"
+                                        name="btn_xpath"
+                                        autoComplete=""
+                                        label="Product Button Xpath"
+                                        classNames={{
+                                            inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                        }}
+                                        value={currentBtnXpath} // Controlled input
+                                        onChange={(e) => setCurrentBtnXpath(e.target.value)}
+                                        onKeyDown={handleAddBtnXpath} // Handle keypress for Enter
+                                    />
+                                    {/* Optionally display the current array of btn_xpaths */}
+                                    <ul>
+                                        {data.btn_xpaths.map((xpath, index) => (
+                                            <li key={index}>{xpath}</li>
+                                        ))}
+                                    </ul>
                                 </div>
 
-                                <div>
-                                    <div className='text-end'>
-                                        <Tooltip color="primary" content="Add Specs Xpath">
-                                            <span className="text-lg text-primary cursor-pointer active:opacity-50" onClick={() => alert(`View ${td.name} specs`)}>
-                                                <PrimaryButton isIconOnly><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
-                                            </span>
-                                        </Tooltip>
-                                    </div>
-                                    <div className='flex items-center'>
+                                <div className="flex gap-1">
+
+                                    <div className="flex-1">
                                         <TextInput
-                                            id="product_specs"
-                                            name="product_specs"
-                                            value={data.product_specs}
+                                            id="specs_xpath"
+                                            name="specs_xpath"
+                                            value={currentSpecsXpath}
                                             autoComplete=""
                                             label="Product Specs Xpath"
-                                            classNames = {{
+                                            classNames={{
                                                 inputWrapper: "group-data-[focus=true]:border-primary-400"
                                             }}
-                                            onChange={(e) => setData('product_specs', e.target.value)}
+                                            onChange={(e) => setCurrentSpecsXpath(e.target.value)}
+                                            // onKeyDown={handleAddSpecsXpath} // Handle keypress for Enter
                                         />
-                                        <Tooltip color="warning" content="Remove Xpath">
-                                            <span className="ml-1 text-lg text-warning cursor-pointer active:opacity-50" onClick={() => alert(`View ${td.name} specs`)}>
-                                                <PrimaryButton color="warning" isIconOnly><FontAwesomeIcon icon={faMinus}/></PrimaryButton>
-                                            </span>
-                                        </Tooltip>
                                     </div>
+                                    <div>
+
+                                        <Autocomplete 
+                                            variant='bordered'
+                                            defaultItems={specsLabel}
+                                            size='sm'
+                                            label="Label"
+                                            inputProps={{
+                                                classNames: {
+                                                    inputWrapper: [
+                                                    "group-data-[focus=true]:border-primary-400",
+                                                    "data-[focus-visible=true]:border-primary-400",
+                                                    "data-[open=true]:border-primary-400", "max-w-[8rem]"
+                                                    ]
+                                                }
+                                            }}
+                                            onSelectionChange={(e)=>handleSpecsLabel(e)}
+                                        >
+                                            {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
+                                        </Autocomplete>
+                                    </div>
+
                                 </div>
+                                    {/* Button to add the spec to the array */}
+                                    <button type="button" onClick={handleAddSpecsXpath}>
+                                        Add Spec
+                                    </button>
+                                    {/* Optionally display the current array of specs_xpaths */}
+                                    <ul>
+                                        {data.specs_xpaths.map((xpath, index) => (
+                                            <li key={index}>
+                                                <strong>Label:</strong> {xpath.specs_label}, <strong>Xpath:</strong> {xpath.specs_xpath}
+                                            </li> 
+                                        ))}
+                                    </ul>
 
                             </div>
 
@@ -217,15 +317,15 @@ export default function RegisterProductWebsite({ products }) {
                             {
                                 selectedProduct &&
                                 <table id="icp_product_specs_div" className="mt-4 w-full">
-
-                                    {
-                                        selectedProduct.pspecs.split('\r\n').map((spec, index) => (
-                                            <tr key={index} className="border border-gray rounded">
-                                                <td className="p-1">{spec}</td>
-                                            </tr>
-                                        ))
-                                    }
-    
+                                    <tbody>
+                                        {
+                                            selectedProduct.pspecs.split('\n').map((spec, index) => (
+                                                <tr key={index} className="border border-gray rounded">
+                                                    <td className="p-1">{spec}</td>
+                                                </tr>
+                                            ))
+                                        }
+                                    </tbody>
                                 </table>
                             }
 
