@@ -35,4 +35,9 @@ class ProductWebsite extends Model
     function spec_xpath(){
         $this->hasMany(ProductWebsiteButton::class);
     }
+
+    public function scheduleProducts()
+    {
+        return $this->hasMany(WebscrapperScheduleProduct::class, 'pcode', 'pcode');
+    }
 }

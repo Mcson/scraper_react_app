@@ -76,6 +76,7 @@ export default function ScheduledProductsTable({data, onPageChange, onEditProduc
                 <TableColumn>TIME(24 hours format)</TableColumn>
                 <TableColumn>FREQUENCY</TableColumn>
                 <TableColumn>PCODE</TableColumn>
+                <TableColumn>PNAME</TableColumn>
                 <TableColumn className="flex items-center justify-center">ACTION</TableColumn>
             </TableHeader>
                 {
@@ -96,6 +97,7 @@ export default function ScheduledProductsTable({data, onPageChange, onEditProduc
                                 <TableCell>{product.schedule.time.hour}:{product.schedule.time.minute}</TableCell>
                                 <TableCell>{product.schedule.frequency}</TableCell>
                                 <TableCell>{product.pcode}</TableCell>
+                                <TableCell>{product.pname}</TableCell>
                                 <TableCell className="flex items-center justify-center gap-1">
                                 <Tooltip color="success" content="Edit">
                                     <Button size="sm" isIconOnly variant="flat" color="success" onPress={() => onEditProduct(product.schedule)}>
