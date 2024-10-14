@@ -34,6 +34,7 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
 console.log(productsData)
     const handleSubmit = (e) => {
        if(isEditing){
+        
         put(route('schedule.update', {id: scheduleData.id,  data }), {
             onSuccess: (response) => {
                 handleAddScheduleToggle(); 
@@ -59,6 +60,7 @@ console.log(productsData)
             }
         })
        } else {
+        
         post(route('schedule.store'), {
             onSuccess: (response) => {
                 handleAddScheduleToggle(); 
@@ -99,7 +101,7 @@ console.log(productsData)
                 frequency: scheduleData.frequency,
                 // date: parseDate(scheduleData.date.split(" ")[0]),
                 time: { hour: parseInt(scheduleData.time.hour )|| 0, minute: parseInt(scheduleData.time.minute) || 0 },
-                products: scheduleData.products.map(product => (product.pcode))
+                products: scheduleData.products.map(product => ({ pcode: product.pcode, pname: product.pname }))
             });
         } 
     }, [isAddSheduleModalOpen, isEditing, scheduleData])
@@ -180,7 +182,7 @@ console.log(productsData)
                         array={productsData} 
                         label="Select Products" 
                         onSelectChange={products => setData('products', products)}
-                        defaultSelectedItems={productsData.filter(item => data.products.includes(item.pcode))}
+                        defaultSelectedItems={productsData.filter(item => data.products.map(p => p.pcode).includes(item.pcode))}
                         />
                         <InputError message={errors.products} className="mt-2" />
                     </div>
