@@ -10,7 +10,7 @@ import CreateScheduleModal from '@/Components/Schedule/CreateScheduleModal';
 import ScheduledProductsTable from '@/Components/Schedule/ScheduledProductsTable';
 
 
-export default function Schedule({data}) {
+export default function Schedule({data, productsData}) {
     const [isAddSheduleModalOpen, setAddSheduleModalOpen] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState(null); // State for selected schedule
     const [isEditing, setIsEditing] = useState(false); // State to track if it's in edit mode
@@ -107,6 +107,7 @@ export default function Schedule({data}) {
                 </div>
             </div>
             <CreateScheduleModal 
+                productsData={productsData}
                 isAddSheduleModalOpen={isAddSheduleModalOpen} 
                 handleAddScheduleToggle={handleAddScheduleToggle} 
                 scheduleData={selectedSchedule}  // Pass selected schedule data for editing

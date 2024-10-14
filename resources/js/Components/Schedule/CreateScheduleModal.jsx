@@ -13,7 +13,7 @@ import {Time, parseDate} from "@internationalized/date";
 
 
 
-export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddScheduleToggle, scheduleData = null , isEditing = false }){
+export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddScheduleToggle, scheduleData = null , isEditing = false, productsData }){
     const { data, setData, post, put, processing, errors, reset, setError } = useForm({
         title: '',
         frequency: '',
@@ -22,7 +22,6 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
         products: []
     });
 
-    
     const [isDateInvalid, setIsDateInvalid] = useState(false);
     const isSubmitDisabled = !data.title || !data.frequency || !data.date || !data.time || data.products.length === 0 || isDateInvalid;
 
@@ -32,20 +31,10 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
         {key: 'Monthly', label: 'Monthly'},
     ]
 
-    const items = [
-        {pcode: 1, pname: 'Product 1'},
-        {pcode: 2, pname: 'Product 2'},
-        {pcode: 3, pname: 'Product 3'},
-        {pcode: 4, pname: 'Product 4'},
-        {pcode: 5, pname: 'Product 5'},
-        {pcode: 6, pname: 'Product 6'},
-        {pcode: 7, pname: 'Product 7'},
-        {pcode: 8, pname: 'Product 8'},
-        {pcode: 9, pname: 'Product 9'},
-    ];
-
+console.log(productsData)
     const handleSubmit = (e) => {
        if(isEditing){
+        
         put(route('schedule.update', {id: scheduleData.id,  data }), {
             onSuccess: (response) => {
                 handleAddScheduleToggle(); 
@@ -71,6 +60,7 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
             }
         })
        } else {
+        
         post(route('schedule.store'), {
             onSuccess: (response) => {
                 handleAddScheduleToggle(); 
@@ -111,7 +101,7 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
                 frequency: scheduleData.frequency,
                 // date: parseDate(scheduleData.date.split(" ")[0]),
                 time: { hour: parseInt(scheduleData.time.hour )|| 0, minute: parseInt(scheduleData.time.minute) || 0 },
-                products: scheduleData.products.map(product =>  parseInt(product.pcode))
+                products: scheduleData.products.map(product => ({ pcode: product.pcode, pname: product.pname }))
             });
         } 
     }, [isAddSheduleModalOpen, isEditing, scheduleData])
@@ -189,10 +179,10 @@ export default function CreateScheduleModal({ isAddSheduleModalOpen, handleAddSc
                     </div>
                     <div className='mt-4'>
                         <SelectSearchMultiple 
-                        array={items} 
+                        array={productsData} 
                         label="Select Products" 
                         onSelectChange={products => setData('products', products)}
-                        defaultSelectedItems={items.filter(item => data.products.includes(item.pcode))}
+                        defaultSelectedItems={productsData.filter(item => data.products.map(p => p.pcode).includes(item.pcode))}
                         />
                         <InputError message={errors.products} className="mt-2" />
                     </div>
