@@ -57,24 +57,39 @@ class WebscrapperScheduleServices
 
     public function getSchedulesWithProducts()
     {
-        // Retrieve paginated schedules with related products
-        $products = WebscrapperScheduleProduct::with('schedule')
-        ->orderBy('created_at', 'desc')
-        ->paginate(10);  // Keep the pagination
+        // Retrieve paginated products with related schedule
+        $products = WebscrapperScheduleProduct::with(['schedule.products']) // Eager load the schedule
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);  // Paginate the products
 
+        // Transform the products to include schedule details
         $products->getCollection()->transform(function ($product) {
             return [
                 'id' => $product->id,
                 'pcode' => $product->pcode,
-                'frequency' => $product->schedule->frequency,
-                'title' => $product->schedule->title,
-                'date' => Carbon::parse($product->schedule->date)->format('F j, Y'),
-                'time' => str_pad($product->schedule->time_hh, 2, '0', STR_PAD_LEFT) . ':' . str_pad($product->schedule->time_mm, 2, '0', STR_PAD_LEFT),
+                'schedule' => [
+                    'id' => $product->schedule->id,
+                    'title' => $product->schedule->title,
+                    'frequency' => $product->schedule->frequency,
+                    'date' => $product->schedule->date,
+                    'time' => [
+                        'hour' => str_pad($product->schedule->time_hh, 2, '0', STR_PAD_LEFT),
+                        'minute' => str_pad($product->schedule->time_mm, 2, '0', STR_PAD_LEFT),
+                    ],
+                    'products' => $product->schedule->products->map(function ($scheduleProduct) {
+                        return [
+                            'id' => $scheduleProduct->id,
+                            'pcode' => $scheduleProduct->pcode
+                        ];
+                    })->toArray(),
+                ]
             ];
         });
-
-        return $products; 
+       
+        return $products;
     }
+
+    
 
     public function deleteProduct($productId)
     {
@@ -102,6 +117,47 @@ class WebscrapperScheduleServices
             return ['success' => false, 'message' => 'Error deleting product: ' . $e->getMessage()];
         }
     }
+
+    public function updateSchedule(array $data, WebscrapperSchedule $schedule)
+    {
+       
+        DB::beginTransaction();
+    
+        try {
+            // Parse the date and ensure correct format
+            $date = Carbon::create($data['date']['year'], $data['date']['month'], $data['date']['day']);
+            $time_hh = $data['time']['hour'];
+            $time_mm = $data['time']['minute'];
+    
+            // Update the schedule
+            $schedule->update([
+                'title' => $data['title'],
+                'date' => $date,
+                'frequency' => $data['frequency'],
+                'time_hh' => $time_hh,
+                'time_mm' => $time_mm,
+            ]);
+    
+            // Update products (First remove the existing ones)
+            WebscrapperScheduleProduct::where('schedule_id', $schedule->id)->delete();
+            // dd($data['products']);
+            foreach($data['products'] as $product) {
+                
+                WebscrapperScheduleProduct::create([
+                    'schedule_id' => $schedule->id,
+                    'pcode' => $product['pcode'],
+                ]);
+            }
+    
+            DB::commit();
+            return $schedule;
+    
+        } catch (\Exception $e) {
+            DB::rollback();
+            throw $e;
+        }
+    }
+    
 
 
 }

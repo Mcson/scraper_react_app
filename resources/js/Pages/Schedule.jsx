@@ -16,6 +16,11 @@ export default function Schedule({data}) {
     const [isEditing, setIsEditing] = useState(false); // State to track if it's in edit mode
 
     const handleAddScheduleToggle = (e) => {
+        if (isAddSheduleModalOpen) {
+            // Reset editing state and selected schedule when closing the modal
+            setIsEditing(false);
+            setSelectedSchedule(null);
+        }
         setAddSheduleModalOpen(!isAddSheduleModalOpen)
     }
 
@@ -25,6 +30,10 @@ export default function Schedule({data}) {
         setAddSheduleModalOpen(true); // Open the modal
 
     }
+
+    // useEffect(() => {
+    //     console.log(data)
+    // })
 
    
 

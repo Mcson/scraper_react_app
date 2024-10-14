@@ -84,27 +84,34 @@ export default function ScheduledProductsTable({data, onPageChange, onEditProduc
                     <TableBody emptyContent={"No Users to display."}>{[]}</TableBody>
                     :
                     <TableBody>
-                        {data.data.map((products) => (
-                            <TableRow key={products.id}>
-                                <TableCell>{products.title}</TableCell>
-                                <TableCell>{products.date}</TableCell>
-                                <TableCell>{products.time}</TableCell>
-                                <TableCell>{products.frequency}</TableCell>
-                                <TableCell>{products.pcode}</TableCell>
+                        {data.data.map((product) => (
+                            
+                                <TableRow key={product.id}>
+                                <TableCell>{product.schedule.title}</TableCell>
+                                <TableCell>{new Date(product.schedule.date).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'long',
+                                            day: 'numeric',
+                                        })}</TableCell>
+                                <TableCell>{product.schedule.time.hour}:{product.schedule.time.minute}</TableCell>
+                                <TableCell>{product.schedule.frequency}</TableCell>
+                                <TableCell>{product.pcode}</TableCell>
                                 <TableCell className="flex items-center justify-center gap-1">
                                 <Tooltip color="success" content="Edit">
-                                    <Button size="sm" isIconOnly variant="flat" color="success" onPress={() => onEditProduct(products)}>
+                                    <Button size="sm" isIconOnly variant="flat" color="success" onPress={() => onEditProduct(product.schedule)}>
                                         <FontAwesomeIcon icon={faPenToSquare} />
                                     </Button>
                                 </Tooltip>
                                 
                                 <Tooltip color="danger" content="Delete">
-                                    <Button size="sm" isIconOnly variant="flat" color="danger" onPress={() => handleDeteleProduct(products.id)}>
+                                    <Button size="sm" isIconOnly variant="flat" color="danger" onPress={() => handleDeteleProduct(product.id)}>
                                         <FontAwesomeIcon icon={faTrashCan} />
                                     </Button>
                                 </Tooltip>
                                 </TableCell>
                             </TableRow>
+                          
+                            
                         ))}
                     </TableBody>
                 }

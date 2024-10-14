@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\WebscrapperSchedule;
 use App\Services\WebscrapperScheduleServices;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
@@ -82,9 +83,22 @@ class ScheduleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, WebscrapperSchedule $schedule)
     {
         //
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'frequency' => 'required|string',
+            'date' => 'required',
+            'time' => 'required',
+            'products' => 'required|array',
+        ]);
+        try {
+            $schedule = $this->webScrapperScheduleServices->updateSchedule($data, $schedule);
+            return Redirect::back()->with(['success' => 'Successfully updated a schedule.']);
+        } catch (\Exception $e) {
+            return Redirect::back()->with(['error' => $e->getMessage()]);
+        }
     }
 
     /**
