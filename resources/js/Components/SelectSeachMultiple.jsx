@@ -1,12 +1,18 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Autocomplete, AutocompleteItem, Chip } from "@nextui-org/react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faX } from '@fortawesome/free-solid-svg-icons';
 
 
-const SelectSearchMultiple = ({array, label, onSelectChange, ...props }) => {
+const SelectSearchMultiple = ({array, label, onSelectChange, defaultSelectedItems = [], ...props }) => {
 
     const [selectedItems, setSelectedItems] = useState([]);
+
+    useEffect(() => {
+        if(defaultSelectedItems.length > 0){
+            setSelectedItems(defaultSelectedItems);
+        }
+    }, [defaultSelectedItems]);
 
     const isItemSelected = (item) => {
         return selectedItems.some(selectedItem => selectedItem.pcode === item.pcode);
