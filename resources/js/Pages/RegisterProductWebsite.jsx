@@ -90,6 +90,7 @@ export default function RegisterProductWebsite({ products }) {
     };
     const handleSelectProduct = (e) => {
         setProductKey(e);
+        setCurrentSpecsLabel('');
     };
 
     useEffect(()=>{
@@ -128,19 +129,7 @@ export default function RegisterProductWebsite({ products }) {
             // console.log("outlet_id: ",outletKey);
         }
 
-        // if(currentSpecsLabel){
-        //     // Find label by value
-        //     const findLabelByValue = (key) => {
-        //         const foundItem = specsLabel.find(item => item.value === key);
-        //         return foundItem ? foundItem.label : 'Label not found';
-        //     };
-        //     setData('specs_label', findLabelByValue(currentSpecsLabel));
-        // }
-
-        // console.log('SelectedProduct: ', selectedProduct);
-        
     }, [ productKey, outletKey ])
-    // }, [ productKey, outletKey, currentSpecsLabel ])
 
     const handleSubmit = (e) => {
         
@@ -291,6 +280,7 @@ export default function RegisterProductWebsite({ products }) {
                                                     ]
                                                 }
                                             }}
+                                            inputValue={currentSpecsLabel}
                                             onSelectionChange={(e)=>handleSpecsLabel(e)}
                                         >
                                             {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
