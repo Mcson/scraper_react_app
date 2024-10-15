@@ -11,7 +11,7 @@ export default function SidebarLayout({ children, titleState }) {
           isVertical='true'
           classNames={{
             base: "min-h-[70vh]",
-            tabList: "shadow-md bg-white w-[15em] min-h-[70vh] gap-2 relative rounded-lg p-3 border-b border-divider",
+            tabList: "shadow-md bg-white min-w-[14rem] min-h-[70vh] gap-2 relative rounded-lg p-3 border-b border-divider p-4",
             cursor: "w-full bg-[#22d3ee]",
             tab: "",
             tabContent: "group-data-[selected=true]:text-gray-900",

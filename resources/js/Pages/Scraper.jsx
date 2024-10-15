@@ -47,9 +47,18 @@ export default function Scraper({ products }) {
             case 'scrape':
                 return <Scrape />;
             case 'icp':
-                return <ViewIcpData />;
+                // return ;
+                return <div className="h-full">
+                <Card className="min-h-[70vh] p-3">
+                <ViewIcpData />
+                </Card>
+            </div>;
             case 'non_icp':
-                return <ViewNonIcpData />;
+                return <div className="h-full">
+                <Card className="min-h-[70vh] p-3">
+                <ViewNonIcpData />
+                </Card>
+                </div>
             case 'downloads':
                 return <Downloads />;
             default:

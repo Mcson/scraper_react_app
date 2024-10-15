@@ -68,7 +68,7 @@ class WebscrapperScheduleServices
             return [
                 'id' => $product->id,
                 'pcode' => $product->pcode,
-                'pname' => $product->product->pname,
+                'pname' => $product->product->pname ?? "",
                 'schedule' => [
                     'id' => $product->schedule->id,
                     'title' => $product->schedule->title,

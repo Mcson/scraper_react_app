@@ -2,7 +2,7 @@ import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell} from "@
 
 export default function TableComp({ tableHeader, tableData, ...props }) {
   return (
-    <Table aria-label="Example static collection table" {...props}>
+    <Table variant="light" removeWrapper aria-label="Example static collection table" {...props}>
       <TableHeader>
 
         {
