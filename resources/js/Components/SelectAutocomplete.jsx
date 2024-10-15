@@ -1,7 +1,7 @@
 import { forwardRef, useEffect, useRef } from 'react';
 import {Autocomplete, AutocompleteItem} from "@nextui-org/react";
 
-export default forwardRef(function SelectAutocomplete({ setValue, items, classNames = '' , label, options = [], ...props}, ref){
+export default forwardRef(function SelectAutocomplete({ setValue, inputValue, items, classNames = '' , label, options = [], ...props}, ref){
     const selectRef = ref ? ref : useRef();
 
     return(
@@ -24,6 +24,7 @@ export default forwardRef(function SelectAutocomplete({ setValue, items, classNa
                     }
                 }}
                 onSelectionChange={(e)=>setValue(e)}
+                inputValue={inputValue}
             >
                 {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
             </Autocomplete>
