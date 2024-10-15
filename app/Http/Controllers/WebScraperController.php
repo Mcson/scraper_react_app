@@ -37,8 +37,15 @@ class WebScraperController extends Controller
     public function createProductWebsite(Request $request)
     {
         // dd($request->all());
-        $products = $this->webScraperServices->registerProductWebsite($request->all());
-        return response()->json(['success' => 'Product Website saved successfully!']);
+
+        try {
+            $products = $this->webScraperServices->registerProductWebsite($request->all());
+            
+            return Redirect::back()->with(['success' => 'Product Website saved successfully!']);
+        } catch (\Exception $e) {
+            return Redirect::back()->with(['error' => $e->getMessage()]);
+        }
+        
     }
 
     /**
