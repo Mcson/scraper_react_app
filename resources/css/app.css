@@ -25,3 +25,10 @@
     } */
 }
 /* end register product form */
+
+
+@layer base {
+    :root { 
+      --textGray: 195, 200, 204;
+    }
+  }

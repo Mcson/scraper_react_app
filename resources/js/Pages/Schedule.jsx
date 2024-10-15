@@ -8,12 +8,15 @@ import {Tab, Card, CardBody} from "@nextui-org/react";
 import { useState, useEffect } from 'react';
 import CreateScheduleModal from '@/Components/Schedule/CreateScheduleModal';
 import ScheduledProductsTable from '@/Components/Schedule/ScheduledProductsTable';
+import SideNav from '@/Components/SideNav';
 
 
 export default function Schedule({data, productsData}) {
     const [isAddSheduleModalOpen, setAddSheduleModalOpen] = useState(false);
     const [selectedSchedule, setSelectedSchedule] = useState(null); // State for selected schedule
     const [isEditing, setIsEditing] = useState(false); // State to track if it's in edit mode
+    const [active, setActive] = useState("schedule_products");
+    const [title, setTitle] = useState("Schedule Products");
 
     const handleAddScheduleToggle = (e) => {
         if (isAddSheduleModalOpen) {
@@ -35,9 +38,29 @@ export default function Schedule({data, productsData}) {
     //     console.log(data)
     // })
 
-   
+    const navItem = [
+        {id: 1, icon: faCalendarDays, title: "Schedule Products", value:"schedule_products"}
+    ];
 
-    const [title, setTitle] = useState("Schedules");
+    const handleDynamicComponent = (value) => {
+        switch (value) {
+            case 'schedule_products':
+                return <div className="h-full">
+                <Card className="min-h-[70vh] p-3">
+                <ScheduledProductsTable data={data} onPageChange={handlePageChange} onEditProduct={handleEditSchedule}/>
+                </Card>
+
+            </div>;
+            default:
+                return <Card className="py-12"><CardBody>Component Not Found!</CardBody></Card>;
+        }
+    }
+
+    useEffect(() => {
+        handleDynamicComponent(active);
+    }, [active]);
+
+
 
     const handlePageChange = (page) => {
         router.visit(route('schedule', {page}), {
@@ -65,44 +88,7 @@ export default function Schedule({data, productsData}) {
             <div className="py-12 min-h-[70vh]">
                 <div className="h-full mx-auto max-w-7xl sm:px-6 lg:px-8">
                     {/* <div className="overflow-hidden shadow-sm sm:rounded-lg"> */}
-
-                            <SidebarLayout
-                                titleState={setTitle}
-                            >
-                                <Tab 
-                                    key="Schedules" 
-                                    title={
-                                        <>
-                                            <FontAwesomeIcon icon={faCalendarDays} className="mr-2" /> Scheduled Products
-                                        </>
-                                    }
-                                >
-                                <div className="h-full">
-                                    <Card className="min-h-[70vh] p-3">
-
-                                    <ScheduledProductsTable data={data} onPageChange={handlePageChange} onEditProduct={handleEditSchedule}/>
-
-                                    
-                                    </Card>
-
-                                </div>
-                                </Tab>
-                                <Tab key="Another Tab" title="Another Tab">
-                                    <Card className="h-full p-3">
-                                    <CardBody>
-                                        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-                                    </CardBody>
-                                    </Card>  
-                                </Tab>
-                                <Tab key="Another Tab1" title="Another Tab1">
-                                    <Card className="h-full p-3">
-                                    <CardBody>
-                                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-                                    </CardBody>
-                                    </Card>  
-                                </Tab>
-                            </SidebarLayout>
-
+                        <SideNav setTitle={setTitle} setActive={setActive} active={active} navItem={navItem} handleDynamicComponent={handleDynamicComponent}/>
                     {/* </div> */}
                 </div>
             </div>
