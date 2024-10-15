@@ -6,6 +6,7 @@ import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import SelectAutocomplete from '@/Components/SelectAutocomplete';
+import Swal from 'sweetalert2';
 
 export default function RegisterProductWebsite({ products }) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -120,7 +121,6 @@ export default function RegisterProductWebsite({ products }) {
 
         if(outletKey){
             setData('outlet_id', outletKey);
-            // console.log("outlet_id: ",outletKey);
         }
 
     }, [ productKey, outletKey ])
@@ -128,8 +128,24 @@ export default function RegisterProductWebsite({ products }) {
     const handleSubmit = (e) => {
         
         post(route('scraper.create'), {
-            onSuccess: (res) => {
-                console.log(res);
+            onSuccess: (response) => {
+                const msg = response.props.flash;
+                if(msg.success){
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success!',
+                        text: msg.success,
+                    }).then(() => {
+                        setProductKey(null);
+                        reset();
+                    });
+                } else if(msg.error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Something went wrong!',
+                        text: msg.error,
+                    });
+                }
             }
         });
         
@@ -160,12 +176,14 @@ export default function RegisterProductWebsite({ products }) {
                                 
                                 <SelectAutocomplete
                                     items={products}
+                                    // inputValue={productKey}
                                     label="Select Product"
                                     setValue={handleSelectProduct}
                                 />
                                 
                                 <SelectAutocomplete
                                     items={outletItems}
+                                    // inputValue={outletKey}
                                     label="Select Outlet"
                                     setValue={setOutletKey}
                                 />
@@ -222,7 +240,9 @@ export default function RegisterProductWebsite({ products }) {
 
                                 <div>
                                     
-                                    <PrimaryButton type="button" onPress={handleAddBtnXpath} className='lower-case mb-1 float-end'>Add Btn Xpath<FontAwesomeIcon icon={faPlus}/></PrimaryButton>
+                                    <Tooltip color="warning" content="Tooltip 1" delay={1000}>
+                                        <PrimaryButton type="button" onPress={handleAddBtnXpath} className='lower-case mb-1 float-end'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
+                                    </Tooltip>
                                     <TextInput
                                         id="btn_xpath"
                                         name="btn_xpath"
@@ -257,7 +277,7 @@ export default function RegisterProductWebsite({ products }) {
                                 <div>
 
                                     <div className='flex justify-end'>
-                                        <PrimaryButton type="button" onPress={handleAddSpecsXpath} className='lower-case mb-1'>Add Specs Xpath<FontAwesomeIcon icon={faPlus}/></PrimaryButton>
+                                        <PrimaryButton type="button" onPress={handleAddSpecsXpath} className='lower-case mb-1'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
                                     </div>
                                     <div className="flex gap-1">
                                         <div className="flex-1">
