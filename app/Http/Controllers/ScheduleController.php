@@ -28,8 +28,10 @@ class ScheduleController extends Controller
     public function index()
     {
         $data = $this->webScrapperScheduleServices->getSchedulesWithProducts();
+        $productsData = $this->webScrapperScheduleServices->getProductWebsite();
+       
         
-        return Inertia::render('Schedule', ['data' => $data]);
+        return Inertia::render('Schedule', ['data' => $data, 'productsData' => $productsData]);
     }
 
     /**

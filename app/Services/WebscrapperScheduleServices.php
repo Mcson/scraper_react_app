@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\ProductWebsite;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\WebscrapperSchedule;
@@ -58,7 +59,7 @@ class WebscrapperScheduleServices
     public function getSchedulesWithProducts()
     {
         // Retrieve paginated products with related schedule
-        $products = WebscrapperScheduleProduct::with(['schedule.products']) // Eager load the schedule
+        $products = WebscrapperScheduleProduct::with(['schedule.products', 'product']) // Eager load the schedule
             ->orderBy('created_at', 'desc')
             ->paginate(10);  // Paginate the products
 
@@ -67,6 +68,7 @@ class WebscrapperScheduleServices
             return [
                 'id' => $product->id,
                 'pcode' => $product->pcode,
+                'pname' => $product->product->pname,
                 'schedule' => [
                     'id' => $product->schedule->id,
                     'title' => $product->schedule->title,
@@ -86,6 +88,11 @@ class WebscrapperScheduleServices
             ];
         });
        
+        return $products;
+    }
+
+    public function getProductWebsite(){
+        $products = ProductWebsite::select('pcode', 'pname')->get();
         return $products;
     }
 
