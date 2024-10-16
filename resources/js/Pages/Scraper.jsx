@@ -7,8 +7,7 @@ import { useState, useEffect } from "react";
 import Scrape from './Scrape';
 import RegisteredProductWebsite from './RegisteredProductWebsite';
 import RegisterProductWebsite from './RegisterProductWebsite';
-import ViewIcpData from './ViewIcpData';
-import ViewNonIcpData from './ViewNonIcpData';
+
 import Downloads from './Downloads';
 import SideNav from '@/Components/SideNav';
 
@@ -46,19 +45,6 @@ export default function Scraper({ products }) {
                 return <RegisteredProductWebsite />;
             case 'scrape':
                 return <Scrape />;
-            case 'icp':
-                // return ;
-                return <div className="h-full">
-                <Card className="min-h-[70vh] p-3">
-                <ViewIcpData />
-                </Card>
-            </div>;
-            case 'non_icp':
-                return <div className="h-full">
-                <Card className="min-h-[70vh] p-3">
-                <ViewNonIcpData />
-                </Card>
-                </div>
             case 'downloads':
                 return <Downloads />;
             default:

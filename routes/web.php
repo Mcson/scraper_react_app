@@ -1,14 +1,16 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ProductsController;
-use App\Http\Controllers\ProductsWebsiteController;
-use App\Http\Controllers\WebScraperController;
-use App\Http\Controllers\ScheduleController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
+use App\Http\Controllers\ICPController;
+use App\Http\Controllers\NonICPController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProductsController;
+use App\Http\Controllers\ScheduleController;
+use App\Http\Controllers\WebScraperController;
+use App\Http\Controllers\ProductsWebsiteController;
 
 Route::get('/', function () {
     // return Inertia::render('Welcome', [
@@ -28,12 +30,21 @@ Route::get('/dashboard', function () {
 // Route::get('/products', [ProductsController::class, 'index'])->middleware(['auth', 'verified'])->name('products');
 // Route::get('/register/website', [ProductsWebsiteController::class, 'index'])->middleware(['auth', 'verified'])->name('register.website');
 Route::get('/scraper', [WebScraperController::class, 'index'])->middleware(['auth', 'verified'])->name('scraper');
-Route::get('/schedule', [ScheduleController::class, 'index'])->middleware(['auth', 'verified'])->name('schedule');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // ICP PAGE
+    Route::get('/icp', [ICPController::class, 'index'])->name('icp');
+
+    // NON ICP PAGE
+    Route::get('/non-icp', [NonICPController::class, 'index'])->name('non-icp');
+
+    // SCHEDULE PAGE
+    Route::get('/schedule', [ScheduleController::class, 'index'])->name('schedule');
 
     // WEBSCRAPPERSCHEDULE
     Route::post('/create-schedule', [ScheduleController::class, 'store'])->name('schedule.store');

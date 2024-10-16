@@ -1,11 +1,11 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGaugeHigh } from '@fortawesome/free-solid-svg-icons';
+import PrimaryLayout from '@/Layouts/PrimaryLayout';
 
 export default function Dashboard() {
     return (
-        <AuthenticatedLayout
+        <PrimaryLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
                   <FontAwesomeIcon icon={faGaugeHigh} className="text-primary-500 mr-2" />   Dashboard
@@ -23,6 +23,6 @@ export default function Dashboard() {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </PrimaryLayout>
     );
 }

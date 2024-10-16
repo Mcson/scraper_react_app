@@ -26,6 +26,12 @@ class WebScraperServices
         return $products;
     }
 
+    public function getIcpProductsPaginate()
+    {
+        $paginatedProducts = DB::table('household_products')->paginate(10);
+        return $paginatedProducts;
+    }
+
     public function getIcpProductsAsSelectOption()
     {
         $products = DB::table('household_products')->select([
