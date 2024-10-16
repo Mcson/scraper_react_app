@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMinus, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faMinus, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import PrimaryButton from '@/Components/PrimaryButton';
-import { Autocomplete, AutocompleteItem, Card, Chip, Tooltip } from '@nextui-org/react';
+import { Autocomplete, AutocompleteItem, Card, Chip, Divider, Tooltip } from '@nextui-org/react';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
@@ -12,15 +12,23 @@ export default function RegisterProductWebsite({ products }) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     const { data, setData, post, processing, errors, reset } = useForm({
-        product_id: '',
-        outlet_id: '',
-        terms_url: '',
-        product_url: '',
-        product_title_xpath: '',
-        product_price_xpath: '',
-        btn_xpaths: [],
-        specs_xpaths: [],
+        products: [
+            {
+                product_id: '',
+                outlet_id: '',
+                terms_url: '',
+                product_url: '',
+                product_title_xpath: '',
+                product_price_xpath: '',
+                btn_xpaths: [],
+                specs_xpaths: [],
+            },
+        ],
     });
+
+    useEffect(() => {
+        console.log('Products:', data.products);
+    }, [data.products]);
 
     const [showRegForm, setShowRegForm] = useState(false); // Initially hidden - registration form
     const handleRegForm = (isChecked) => {
@@ -43,16 +51,38 @@ export default function RegisterProductWebsite({ products }) {
     const [currentSpecsLabel, setCurrentSpecsLabel] = useState('');
 
     // Handle adding to the btn_xpaths array and resetting the input
-    const handleAddBtnXpath = () => {
+    const handleAddBtnXpath = (productIndex) => {
         if (currentBtnXpath.trim() !== '') {
-            // Add the current input value to the btn_xpaths array
-            setData('btn_xpaths', [...data.btn_xpaths, currentBtnXpath]);
+            const updatedProducts = data.products.map((product, index) => {
+                if (index === productIndex) {
+                    return {
+                        ...product, // keep other product fields
+                        btn_xpaths: [...product.btn_xpaths, currentBtnXpath], // update btn_xpaths
+                    };
+                }
+                return product; // return the product unchanged for other indices
+            });
+    
+            // Update the state with the modified products array
+            setData('products', updatedProducts);
+    
             // Clear the input field
             setCurrentBtnXpath('');
         }
     };
-    const handleRemoveBtnXpath = (xpath) => {
-        setData('btn_xpaths', data.btn_xpaths.filter(item => item !== xpath));
+    const handleRemoveBtnXpath = (productIndex, xpath) => {
+        const updatedProducts = data.products.map((product, index) => {
+            if (index === productIndex) {
+                return {
+                    ...product,
+                    btn_xpaths: product.btn_xpaths.filter(item => item !== xpath), // Remove the xpath
+                };
+            }
+            return product; // Leave other products unchanged
+        });
+    
+        // Update the state with the modified products array
+        setData('products', updatedProducts);
     };
 
     // handle specs label
@@ -83,9 +113,40 @@ export default function RegisterProductWebsite({ products }) {
         } 
         
     };
-    const handleSelectProduct = (e) => {
+    const handleSelectProduct = (e, index) => {
         setProductKey(e);
         setCurrentSpecsLabel('');
+    };
+
+    // Function to handle adding a new product
+    const addProduct = () => {
+        setData('products', [
+            ...data.products,
+            {
+                product_id: '',
+                outlet_id: '',
+                terms_url: '',
+                product_url: '',
+                product_title_xpath: '',
+                product_price_xpath: '',
+                btn_xpaths: [],
+                specs_xpaths: [],
+            },
+        ]);
+    };
+
+    // Function to remove a product
+    const removeProduct = (index) => {
+        const updatedProducts = data.products.filter((_, i) => i !== index);
+        setData('products', updatedProducts);
+    };
+
+    // Function to handle changes in each product input
+    const handleProductChange = (index, field, value) => {
+        const updatedProducts = data.products.map((product, i) =>
+            i === index ? { ...product, [field]: value } : product
+        );
+        setData('products', updatedProducts);
     };
 
     useEffect(()=>{
@@ -166,191 +227,196 @@ export default function RegisterProductWebsite({ products }) {
 
                         <form action="" method="POST" id='registerWebsiteForm' className={`mt-4 ${showRegForm ? "" : "hidden"}`}>
                             <div className="flex items-center mb-8">
-                                <PrimaryButton >Add New Product<FontAwesomeIcon icon={faPlus}/></PrimaryButton>
+                                <PrimaryButton onPress={addProduct}>Add New Product<FontAwesomeIcon icon={faPlus}/></PrimaryButton>
                             </div>
                             
                             <input type="hidden" name="_token" value={csrfToken} />
 
                             {/* Product Inputs Wrapper */}
-                            <div id='register_input_wrapper'>
-                                
-                                <SelectAutocomplete
-                                    items={products}
-                                    // inputValue={productKey}
-                                    label="Select Product"
-                                    setValue={handleSelectProduct}
-                                />
-                                
-                                <SelectAutocomplete
-                                    items={outletItems}
-                                    // inputValue={outletKey}
-                                    label="Select Outlet"
-                                    setValue={setOutletKey}
-                                />
+                            <div>
+                                {
+                                    data.products.map((product, index) => (
+                                        <div key={index}>
+                                            <div className='flex justify-between'>
+                                                <h4>Product {index + 1}</h4>
+                                                <PrimaryButton type="button" color="danger" onPress={()=>{removeProduct(index)}} className='lower-case mb-1 float-end'><FontAwesomeIcon icon={faXmark}/></PrimaryButton>
+                                            </div>
+                                            <div className='register_input_wrapper'>
+                                                <SelectAutocomplete
+                                                    items={products}
+                                                    inputValue={product.product_id}
+                                                    label="Select Product"
+                                                    setValue={(e) => handleProductChange(index, 'product_id', e)}
+                                                />
+                                                
+                                                <SelectAutocomplete
+                                                    items={outletItems}
+                                                    // inputValue={outletKey}
+                                                    label="Select Outlet"
+                                                    setValue={setOutletKey}
+                                                />
+                                            
+                                                <TextInput
+                                                    name="terms_url"
+                                                    value={product.terms_url}
+                                                    autoComplete=""
+                                                    label="Terms Url"
+                                                    classNames = {{
+                                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                                    }}
+                                                    onChange={(e) => handleProductChange(index, 'terms_url', e.target.value)}
+                                                />
+                                                
+                                                <TextInput
+                                                    name="product_url"
+                                                    value={product.product_url}
+                                                    autoComplete=""
+                                                    label="Product Url"
+                                                    classNames = {{
+                                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                                    }}
+                                                    onChange={(e) => handleProductChange(index, 'product_url', e.target.value)}
+                                                />
+                                                
+                                                <TextInput
+                                                    name="product_title_xpath"
+                                                    value={product.product_title_xpath}
+                                                    autoComplete=""
+                                                    label="Product Title Xpath"
+                                                    classNames = {{
+                                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                                    }}
+                                                    onChange={(e) => handleProductChange(index, 'product_title_xpath', e.target.value)}
+                                                />
+                                                
+                                                <TextInput
+                                                    name="product_price_xpath"
+                                                    value={product.product_price_xpath}
+                                                    autoComplete=""
+                                                    label="Product Price Xpath"
+                                                    classNames = {{
+                                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                                    }}
+                                                    onChange={(e) => handleProductChange(index, 'product_price_xpath', e.target.value)}
+                                                />
 
-                            
-                                <TextInput
-                                    id="terms_url"
-                                    name="terms_url"
-                                    value={data.terms_url}
-                                    autoComplete=""
-                                    label="Terms Url"
-                                    classNames = {{
-                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                    }}
-                                    onChange={(e) => setData('terms_url', e.target.value)}
-                                />
-                                
-                                <TextInput
-                                    id="product_url"
-                                    name="product_url"
-                                    value={data.product_url}
-                                    autoComplete=""
-                                    label="Product Url"
-                                    classNames = {{
-                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                    }}
-                                    onChange={(e) => setData('product_url', e.target.value)}
-                                />
+                                                <div>
+                                                    
+                                                    <Tooltip color="warning" content="Tooltip 1">
+                                                        <PrimaryButton type="button" onPress={()=>{handleAddBtnXpath(index)}} className='lower-case mb-1 float-end'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
+                                                    </Tooltip>
+                                                    <TextInput
+                                                        name="btn_xpath"
+                                                        autoComplete=""
+                                                        label="Product Button Xpath"
+                                                        classNames={{
+                                                            inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                                        }}
+                                                        value={currentBtnXpath} // Controlled input
+                                                        onChange={(e) => setCurrentBtnXpath(e.target.value)}
+                                                        onKeyDown={(e)=>{
+                                                            if(e.key === 'Enter') handleAddBtnXpath(e);
+                                                        }} // Handle keypress for Enter
+                                                    />
+                                                    {/* Optionally display the current array of btn_xpaths */}
+                                                    <div>
+                                                        <ul className='flex flex-wrap gap-1 mt-1'>
+                                                            {product.btn_xpaths.map((xpath, i) => {
+                                                                const xpathCount = i + 1;
+                                                                // <li key={index}>{xpath}</li>
+                                                                return <li key={i}>
+                                                                    <Chip
+                                                                        color="primary"
+                                                                        onClose={() => {handleRemoveBtnXpath(i, xpath)}}
+                                                                    >xpath({xpathCount})</Chip>
+                                                                </li>
+                                                            })}
+                                                        </ul>
+                                                    </div>
+                                                </div>
 
-                                
-                                <TextInput
-                                    id="product_title_xpath"
-                                    name="product_title_xpath"
-                                    value={data.product_title_xpath}
-                                    autoComplete=""
-                                    label="Product Title Xpath"
-                                    classNames = {{
-                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                    }}
-                                    onChange={(e) => setData('product_title_xpath', e.target.value)}
-                                />
-                                
-                                <TextInput
-                                    id="product_price_xpath"
-                                    name="product_price_xpath"
-                                    value={data.product_price_xpath}
-                                    autoComplete=""
-                                    label="Product Price Xpath"
-                                    classNames = {{
-                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                    }}
-                                    onChange={(e) => setData('product_price_xpath', e.target.value)}
-                                />
+                                                <div>
 
-                                <div>
-                                    
-                                    <Tooltip color="warning" content="Tooltip 1" delay={1000}>
-                                        <PrimaryButton type="button" onPress={handleAddBtnXpath} className='lower-case mb-1 float-end'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
-                                    </Tooltip>
-                                    <TextInput
-                                        id="btn_xpath"
-                                        name="btn_xpath"
-                                        autoComplete=""
-                                        label="Product Button Xpath"
-                                        classNames={{
-                                            inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                        }}
-                                        value={currentBtnXpath} // Controlled input
-                                        onChange={(e) => setCurrentBtnXpath(e.target.value)}
-                                        onKeyDown={(e)=>{
-                                            if(e.key === 'Enter') handleAddBtnXpath(e);
-                                        }} // Handle keypress for Enter
-                                    />
-                                    {/* Optionally display the current array of btn_xpaths */}
-                                    <div>
-                                        <ul className='flex flex-wrap gap-1 mt-1'>
-                                            {data.btn_xpaths.map((xpath, index) => {
-                                                const xpathCount = index + 1;
-                                                // <li key={index}>{xpath}</li>
-                                                return <li key={index}>
-                                                    <Chip
-                                                        color="primary"
-                                                        onClose={() => {handleRemoveBtnXpath(xpath)}}
-                                                    >xpath({xpathCount})</Chip>
-                                                </li>
-                                            })}
-                                        </ul>
-                                    </div>
-                                </div>
+                                                    <div className='flex justify-end'>
+                                                        <PrimaryButton type="button" onPress={handleAddSpecsXpath} className='lower-case mb-1'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
+                                                    </div>
+                                                    <div className="flex gap-1">
+                                                        <div className="flex-1">
+                                                            <TextInput
+                                                                id="specs_xpath"
+                                                                name="specs_xpath"
+                                                                value={currentSpecsXpath}
+                                                                autoComplete=""
+                                                                label="Product Specs Xpath"
+                                                                classNames={{
+                                                                    inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                                                }}
+                                                                onChange={(e) => setCurrentSpecsXpath(e.target.value)}
+                                                                // onKeyDown={handleAddSpecsXpath} // Handle keypress for Enter
+                                                            />
+                                                        </div>
+                                                        <div>
 
-                                <div>
+                                                            <Autocomplete 
+                                                                variant='bordered'
+                                                                defaultItems={specsLabel}
+                                                                size='sm'
+                                                                label="Label"
+                                                                inputProps={{
+                                                                    classNames: {
+                                                                        inputWrapper: [
+                                                                        "group-data-[focus=true]:border-primary-400",
+                                                                        "data-[focus-visible=true]:border-primary-400",
+                                                                        "data-[open=true]:border-primary-400", "max-w-[8rem]"
+                                                                        ]
+                                                                    }
+                                                                }}
+                                                                inputValue={currentSpecsLabel}
+                                                                onSelectionChange={(e)=>handleSpecsLabel(e)}
+                                                            >
+                                                                {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
+                                                            </Autocomplete>
+                                                        </div>
+                                                    </div>
 
-                                    <div className='flex justify-end'>
-                                        <PrimaryButton type="button" onPress={handleAddSpecsXpath} className='lower-case mb-1'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
-                                    </div>
-                                    <div className="flex gap-1">
-                                        <div className="flex-1">
-                                            <TextInput
-                                                id="specs_xpath"
-                                                name="specs_xpath"
-                                                value={currentSpecsXpath}
-                                                autoComplete=""
-                                                label="Product Specs Xpath"
-                                                classNames={{
-                                                    inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                                }}
-                                                onChange={(e) => setCurrentSpecsXpath(e.target.value)}
-                                                // onKeyDown={handleAddSpecsXpath} // Handle keypress for Enter
-                                            />
+                                                    
+                                                    {/* <div>
+                                                        <ul className='flex flex-wrap gap-1 mt-1'>
+                                                            {data.products.specs_xpaths.map((xpath, index) => {
+                                                                return <li key={index}>
+                                                                    <Chip
+                                                                        color="primary"
+                                                                        onClose={() => {handleRemoveSpecsXpath(xpath)}}
+                                                                    >{xpath.specs_label}</Chip>
+                                                                </li>
+                                                            })}
+                                                        </ul>
+                                                    </div> */}
+
+                                                </div>
+
+                                            </div>
+
+                                            {/* Product Specifications Wrapper */}
+                                            {
+                                                // selectedProduct &&
+                                                // <table id="icp_product_specs_div" className="mt-4 w-full">
+                                                //     <tbody>
+                                                //         {
+                                                //             selectedProduct.pspecs.split('\n').map((spec, index) => (
+                                                //                 <tr key={index} className="border border-gray rounded">
+                                                //                     <td className="p-1">{spec}</td>
+                                                //                 </tr>
+                                                //             ))
+                                                //         }
+                                                //     </tbody>
+                                                // </table>
+                                            }
+                                            <Divider className="my-4" />
                                         </div>
-                                        <div>
-
-                                            <Autocomplete 
-                                                variant='bordered'
-                                                defaultItems={specsLabel}
-                                                size='sm'
-                                                label="Label"
-                                                inputProps={{
-                                                    classNames: {
-                                                        inputWrapper: [
-                                                        "group-data-[focus=true]:border-primary-400",
-                                                        "data-[focus-visible=true]:border-primary-400",
-                                                        "data-[open=true]:border-primary-400", "max-w-[8rem]"
-                                                        ]
-                                                    }
-                                                }}
-                                                inputValue={currentSpecsLabel}
-                                                onSelectionChange={(e)=>handleSpecsLabel(e)}
-                                            >
-                                                {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
-                                            </Autocomplete>
-                                        </div>
-                                    </div>
-
-                                    
-                                    <div>
-                                        <ul className='flex flex-wrap gap-1 mt-1'>
-                                            {data.specs_xpaths.map((xpath, index) => {
-                                                return <li key={index}>
-                                                    <Chip
-                                                        color="primary"
-                                                        onClose={() => {handleRemoveSpecsXpath(xpath)}}
-                                                    >{xpath.specs_label}</Chip>
-                                                </li>
-                                            })}
-                                        </ul>
-                                    </div>
-
-                                </div>
-
+                                    ))
+                                }
                             </div>
-
-                            {/* Product Specifications Wrapper */}
-                            {
-                                selectedProduct &&
-                                <table id="icp_product_specs_div" className="mt-4 w-full">
-                                    <tbody>
-                                        {
-                                            selectedProduct.pspecs.split('\n').map((spec, index) => (
-                                                <tr key={index} className="border border-gray rounded">
-                                                    <td className="p-1">{spec}</td>
-                                                </tr>
-                                            ))
-                                        }
-                                    </tbody>
-                                </table>
-                            }
 
                             <div className="flex justify-end mt-4">
                                 <PrimaryButton

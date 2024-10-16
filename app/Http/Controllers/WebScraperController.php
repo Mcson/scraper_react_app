@@ -36,7 +36,7 @@ class WebScraperController extends Controller
      */
     public function createProductWebsite(Request $request)
     {
-        // dd($request->all());
+        dd($request->all());
 
         try {
             $products = $this->webScraperServices->registerProductWebsite($request->all());
