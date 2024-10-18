@@ -1,69 +1,52 @@
 import React from "react";
-import {Accordion, AccordionItem} from "@nextui-org/react";
+import { Button, Accordion, AccordionItem } from "@nextui-org/react";
+import { Link } from "@inertiajs/react";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-export default function SideNav({ setTitle, setActive, active, navItem, handleDynamicComponent }) {
+export default function SideNav({item, active=false}){
+    const isSubmenuActive = item.submenus?.some(submenu => route().current(submenu.href));
 
-  
-  return (
-    <div className="flex gap-2 min-h-[70vh]">
-        {/* sms navigation */}
-        <div className="p-4 sm:rounded-lg bg-white min-w-[14rem] shadow-md">
-            <ul className="flex flex-col gap-1">
-                {
-                    navItem.map((item, index)=> {
-                       // Check if any submenu item is active
-                    const isSubItemActive = item.subMenu && item.subMenu.some(subItem => active === subItem.value);
+    const itemClasses = {
+        trigger:"z-0 relative group px-4 rounded-xl flex justify-start h-10 data-[hover=true]:bg-default/40 data-[pressed=true]:scale-[0.97] motion-reduce:transition-none  transition-transform-colors-opacity" + (isSubmenuActive ? " bg-default/40" : ""),
+        title: "text-medium text-textGray group-hover:text-white group-focus:text-white" + (isSubmenuActive ? " text-white" : ""),
+        indicator: "text-medium text-textGray group-hover:text-white group-focus:text-white" + (isSubmenuActive ? " text-white" : ""),
+        heading:"text-medium text-textGray group-hover:text-white group-focus:text-white"  + (isSubmenuActive ? " text-white" : ""),
+        startContent:"text-textGray group-hover:text-white group-focus:text-white"  + (isSubmenuActive ? " text-white" : ""),
+    }
 
-                    // Define itemClasses inside the loop where isSubItemActive is available
-                    const itemClasses = {
-                      trigger: "px-2 data-[hover=true]:bg-default/40 rounded-xl h-10 " + (isSubItemActive ? "bg-default/40" : ""),
-                      title: "text-default-500 text-sm" + (isSubItemActive ? "text-default-900 text-sm" : ""),
-                      indicator: "text-sm text-default-500 " + (isSubItemActive ? "text-default-900 text-sm" : ""),
-                      content: "text-default-500 text-sm px-2 text-nowrap" + (isSubItemActive ? "text-default-900 text-sm" : ""),
-                      startContent: "text-sm text-nowrap " + (isSubItemActive ? " text-default-900 text-sm" : " text-default-500 "),
-                    };
-                       return item.subMenu ?
-                        <li key={index}>
-                          <Accordion 
-                            className="px-0" 
-                            isCompact="true" 
-                            itemClasses={itemClasses}
-                          >
-                            <AccordionItem
-                              title={item.title}
-                              aria-label={item.title}
-                              startContent={<FontAwesomeIcon icon={item.icon} className="text-sm  mr-[-4px]" />}
-                            >
-                              {
-                                item.subMenu.map((subItem, subIndex)=>(
-                                    <div 
-                                      key={subIndex}
-                                      className={`px-2 flex items-center rounded-xl h-10 text-default-500 mb-1 hover:bg-default/40 hover:cursor-pointer ${ active === subItem.value ? "bg-gray-100 text-default-900" : "" }`}
-                                      onClick={()=>{setActive(subItem.value); setTitle(subItem.title)}}
+    return (item.submenus && item.submenus.length > 0 ? (
+                    <Accordion
+                        className="px-0"    
+                        itemClasses={itemClasses}
+                    >
+                        <AccordionItem
+                            title={item.title}
+                            startContent={<FontAwesomeIcon icon={item.icon} />}
+                        >
+                        {
+                            item.submenus.map((submenu) => {
+                                const isSubmenuItemActive = route().current(submenu.href);
+                                return (
+                                    <Button
+                                        key={submenu.id}
+                                        href={route(submenu.href)}
+                                        as={Link}
+                                        variant="light"
+                                        className={`w-full text-medium text-textGray flex justify-start hover:text-white mb-1${isSubmenuItemActive ? "bg-default/40 text-white" : "text-textGray hover:text-white"}`}
+                                        startContent={<FontAwesomeIcon icon={submenu.icon} />}
                                     >
-                                      <FontAwesomeIcon icon={subItem.icon} className=" mr-2" />{subItem.title}
-                                    </div>
-                                ))
-                              }
-                            </AccordionItem>
-                          </Accordion>
-                        </li> :
-                        <li 
-                            key={index}
-                            className={`px-2 rounded-xl flex items-center h-10 text-sm text-default-500 hover:bg-default/40 hover:cursor-pointer ${ active === item.value ? "bg-gray-100 text-default-900" : "" }`}
-                            onClick={()=>{setActive(item.value); setTitle(item.title)}}
-                        ><FontAwesomeIcon icon={item.icon} className={`text-sm text-default-500 mr-2 ${ active === item.value ? "text-default-900" : "" }` } />{ item.title }</li>
-                })
-                }
-            </ul>
-        </div>
+                                        {submenu.title}
+                                    </Button>
+                                )
+                            })
+                        }
 
-        {/* dynamic content/component */}
-        <div className="flex-1">
-            { handleDynamicComponent(active) }
-        </div>
-    </div>
-  );
+                        </AccordionItem>
+
+                    </Accordion>
+                ) : (
+                    <Button href={route(item.href)} as={Link} variant='light' className={`w-full text-medium flex justify-start ${active ? 'bg-default/40 text-white' : 'text-textGray hover:text-white'}`} startContent={<FontAwesomeIcon icon={item.icon} className='mr-1'/>}>{item.title}</Button>
+                )        
+    )
+    
 }
-       
