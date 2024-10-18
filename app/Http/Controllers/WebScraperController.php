@@ -31,12 +31,35 @@ class WebScraperController extends Controller
         ]);
     }
 
+    public function registProductView()
+    {
+        $products = $this->webScraperServices->getIcpProductsAsSelectOption();
+        return Inertia::render('RegisterProductWebsite')->with([
+            'products' => $products
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
     public function createProductWebsite(Request $request)
     {
         // dd($request->all());
+
+        // Define the validation rules
+        // $rules = [
+        //     'products' => 'required|array',
+        //     'products.*.product_id' => 'required|exists:household_products,id',
+        //     'products.*.outlet_id' => 'required|integer',
+        //     'products.*.terms_url' => 'required|url',
+        //     'products.*.product_url' => 'required|url',
+        //     'products.*.product_title_xpath' => 'required|string',
+        //     'products.*.product_price_xpath' => 'required|string',
+        //     'products.*.btn_xpaths' => 'required|array',
+        //     'products.*.btn_xpaths.*' => 'required|string',
+        //     'products.*.specs_xpaths' => 'required|array',
+        //     'products.*.specs_xpaths.*' => 'required|string',
+        // ];
 
         try {
             $products = $this->webScraperServices->registerProductWebsite($request->all());
