@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMinus, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faGaugeHigh, faMinus, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Autocomplete, AutocompleteItem, Card, Chip, Divider, Tooltip } from '@nextui-org/react';
 import TextInput from '@/Components/TextInput';
@@ -7,6 +7,8 @@ import { useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
 import SelectAutocomplete from '@/Components/SelectAutocomplete';
 import Swal from 'sweetalert2';
+import PrimaryLayout from '@/Layouts/PrimaryLayout';
+import { Head } from '@inertiajs/react';
 
 export default function RegisterProductWebsite({ products }) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -330,228 +332,242 @@ export default function RegisterProductWebsite({ products }) {
     }
 
     return (
-        <>
+        <PrimaryLayout
+            header={
+                <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                  <FontAwesomeIcon icon={faGaugeHigh} className="text-primary-500 mr-2" />   Dashboard
+                </h2>
+            }
+        >
+            <Head title="Register Product" />
 
-            <Card className="py-12">
-                <div className="sm:px-6 lg:px-8">
-                    {/* <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg"> */}
+
+            <div className="py-12 min-h-[75vh]">
+                <div className="h-full mx-auto max-w-7xl sm:px-6 lg:px-8">   
+                    <Card className="py-12">
+                        <div className="sm:px-6 lg:px-8">
+                            {/* <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg"> */}
 
 
-                        <div className="flex items-center mb-8 content-center">
-                            <input id="checkbox" type="checkbox" className="form-checkbox h-5 w-5 text-blue-600" onChange={(e)=>handleRegForm(e.target.checked)} />
-                            <label for="checkbox" className="ml-2 text-gray-700">I confirm that I have reviewed the <b>Terms and Condition</b> of the website I am about to register and Have found that web scraping is legally allowed. I hold all responsibility for the web scraping activity about the be performed.</label>
-                        </div>
+                                <div className="flex items-center mb-8 content-center">
+                                    <input id="checkbox" type="checkbox" className="form-checkbox h-5 w-5 text-blue-600" onChange={(e)=>handleRegForm(e.target.checked)} />
+                                    <label for="checkbox" className="ml-2 text-gray-700">I confirm that I have reviewed the <b>Terms and Condition</b> of the website I am about to register and Have found that web scraping is legally allowed. I hold all responsibility for the web scraping activity about the be performed.</label>
+                                </div>
 
-                        <form action="" method="POST" id='registerWebsiteForm' className={`mt-4 ${showRegForm ? "" : "hidden"}`}>
-                            <div className="flex items-center mb-8">
-                                <PrimaryButton onPress={addProduct}>Add New Product<FontAwesomeIcon icon={faPlus}/></PrimaryButton>
-                            </div>
-                            
-                            <input type="hidden" name="_token" value={csrfToken} />
+                                <form action="" method="POST" id='registerWebsiteForm' className={`mt-4 ${showRegForm ? "" : "hidden"}`}>
+                                    <div className="flex items-center mb-8">
+                                        <PrimaryButton onPress={addProduct}>Add New Product<FontAwesomeIcon icon={faPlus}/></PrimaryButton>
+                                    </div>
+                                    
+                                    <input type="hidden" name="_token" value={csrfToken} />
 
-                            {/* Product Inputs Wrapper */}
-                            <div>
-                                {
-                                    data.products.map((product, index) => (
-                                        <div key={index}>
-                                            <div className='flex justify-between'>
-                                                <h4>Product {index + 1}</h4>
-                                                {/* <Tooltip content="I am Tooltip"><span className='bg-danger text-white px-3 py-1 rounded-md hover:cursor-pointer'>Tooltip</span></Tooltip> */}
-                                                <Tooltip content="Remove Product">
-                                                    <PrimaryButton type="button" color="danger" onPress={()=>{removeProduct(index)}} className='lower-case mb-1 float-end'><FontAwesomeIcon icon={faXmark}/></PrimaryButton>
-                                                </Tooltip>
-                                            </div>
-                                            <div className='register_input_wrapper'>
-                                                <SelectAutocomplete
-                                                    items={products}
-                                                    // inputValue={product.product_id}
-                                                    label="Select Product"
-                                                    setValue={(e)=>{handleSelectProduct(e, index)}}
-                                                />
-                                                
-                                                <SelectAutocomplete
-                                                    items={outletItems}
-                                                    // inputValue={outletKey}
-                                                    label="Select Outlet"
-                                                    setValue={(e)=>{handleSelectOutlet(e, index)}}
-                                                />
-                                            
-                                                <TextInput
-                                                    name="terms_url"
-                                                    value={product.terms_url}
-                                                    autoComplete=""
-                                                    label="Terms Url"
-                                                    classNames = {{
-                                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                                    }}
-                                                    onChange={(e) => handleProductChange(index, 'terms_url', e.target.value)}
-                                                />
-                                                
-                                                <TextInput
-                                                    name="product_url"
-                                                    value={product.product_url}
-                                                    autoComplete=""
-                                                    label="Product Url"
-                                                    classNames = {{
-                                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                                    }}
-                                                    onChange={(e) => handleProductChange(index, 'product_url', e.target.value)}
-                                                />
-                                                
-                                                <TextInput
-                                                    name="product_title_xpath"
-                                                    value={product.product_title_xpath}
-                                                    autoComplete=""
-                                                    label="Product Title Xpath"
-                                                    classNames = {{
-                                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                                    }}
-                                                    onChange={(e) => handleProductChange(index, 'product_title_xpath', e.target.value)}
-                                                />
-                                                
-                                                <TextInput
-                                                    name="product_price_xpath"
-                                                    value={product.product_price_xpath}
-                                                    autoComplete=""
-                                                    label="Product Price Xpath"
-                                                    classNames = {{
-                                                        inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                                    }}
-                                                    onChange={(e) => handleProductChange(index, 'product_price_xpath', e.target.value)}
-                                                />
-
-                                                <div>
+                                    {/* Product Inputs Wrapper */}
+                                    <div>
+                                        {
+                                            data.products.map((product, index) => (
+                                                <div key={index}>
+                                                    <div className='flex justify-between'>
+                                                        <h4>Product {index + 1}</h4>
+                                                        {/* <Tooltip content="I am Tooltip"><span className='bg-danger text-white px-3 py-1 rounded-md hover:cursor-pointer'>Tooltip</span></Tooltip> */}
+                                                        <Tooltip content="Remove Product">
+                                                            <PrimaryButton type="button" color="danger" onPress={()=>{removeProduct(index)}} className='lower-case mb-1 float-end'><FontAwesomeIcon icon={faXmark}/></PrimaryButton>
+                                                        </Tooltip>
+                                                    </div>
+                                                    <div className='register_input_wrapper'>
+                                                        <SelectAutocomplete
+                                                            items={products}
+                                                            // inputValue={product.product_id}
+                                                            label="Select Product"
+                                                            setValue={(e)=>{handleSelectProduct(e, index)}}
+                                                        />
+                                                        
+                                                        <SelectAutocomplete
+                                                            items={outletItems}
+                                                            // inputValue={outletKey}
+                                                            label="Select Outlet"
+                                                            setValue={(e)=>{handleSelectOutlet(e, index)}}
+                                                        />
                                                     
-                                                    <Tooltip content="Tooltip 1">
-                                                        <PrimaryButton type="button" onPress={()=>{handleAddBtnXpath(index)}} className='lower-case mb-1 float-end'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
-                                                    </Tooltip>
-                                                    <TextInput
-                                                        name="btn_xpath"
-                                                        autoComplete=""
-                                                        label="Product Button Xpath"
-                                                        classNames={{
-                                                            inputWrapper: "group-data-[focus=true]:border-primary-400"
-                                                        }}
-                                                        value={btnXpath[index]?.currentXpath || ''} // Controlled input
-                                                        onChange={(e) => handleBtnXpathChange(index, e.target.value)}
-                                                        onKeyDown={(e)=>{
-                                                            if(e.key === 'Enter') handleAddBtnXpath(index);
-                                                        }} // Handle keypress for Enter
-                                                    />
-                                                    {/* Optionally display the current array of btn_xpaths */}
-                                                    <div>
-                                                        <ul className='flex flex-wrap gap-1 mt-1'>
-                                                            {product.btn_xpaths.map((xpath, i) => {
-                                                                const xpathCount = i + 1;
-                                                                // <li key={index}>{xpath}</li>
-                                                                return <li key={i}>
-                                                                    <Chip
-                                                                        color="primary"
-                                                                        onClose={() => {handleRemoveBtnXpath(index, i, xpath)}}
-                                                                        // onClose={() => {console.log(i, index)}}
-                                                                    >xpath({xpathCount})</Chip>
-                                                                </li>
-                                                            })}
-                                                        </ul>
-                                                    </div>
-                                                </div>
+                                                        <TextInput
+                                                            name="terms_url"
+                                                            value={product.terms_url}
+                                                            autoComplete=""
+                                                            label="Terms Url"
+                                                            classNames = {{
+                                                                inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                                            }}
+                                                            onChange={(e) => handleProductChange(index, 'terms_url', e.target.value)}
+                                                        />
+                                                        
+                                                        <TextInput
+                                                            name="product_url"
+                                                            value={product.product_url}
+                                                            autoComplete=""
+                                                            label="Product Url"
+                                                            classNames = {{
+                                                                inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                                            }}
+                                                            onChange={(e) => handleProductChange(index, 'product_url', e.target.value)}
+                                                        />
+                                                        
+                                                        <TextInput
+                                                            name="product_title_xpath"
+                                                            value={product.product_title_xpath}
+                                                            autoComplete=""
+                                                            label="Product Title Xpath"
+                                                            classNames = {{
+                                                                inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                                            }}
+                                                            onChange={(e) => handleProductChange(index, 'product_title_xpath', e.target.value)}
+                                                        />
+                                                        
+                                                        <TextInput
+                                                            name="product_price_xpath"
+                                                            value={product.product_price_xpath}
+                                                            autoComplete=""
+                                                            label="Product Price Xpath"
+                                                            classNames = {{
+                                                                inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                                            }}
+                                                            onChange={(e) => handleProductChange(index, 'product_price_xpath', e.target.value)}
+                                                        />
 
-                                                <div>
-
-                                                    <div className='flex justify-end'>
-                                                        <PrimaryButton type="button" onPress={()=>handleAddSpecsXpath(index)} className='lower-case mb-1'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
-                                                    </div>
-                                                    <div className="flex gap-1">
-                                                        <div className="flex-1">
+                                                        <div>
+                                                            
+                                                            <Tooltip content="Tooltip 1">
+                                                                <PrimaryButton type="button" onPress={()=>{handleAddBtnXpath(index)}} className='lower-case mb-1 float-end'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
+                                                            </Tooltip>
                                                             <TextInput
-                                                                id="specs_xpath"
-                                                                name="specs_xpath"
-                                                                value={specsXpath[index].currentXpath}
+                                                                name="btn_xpath"
                                                                 autoComplete=""
-                                                                label="Product Specs Xpath"
+                                                                label="Product Button Xpath"
                                                                 classNames={{
                                                                     inputWrapper: "group-data-[focus=true]:border-primary-400"
                                                                 }}
-                                                                onChange={(e) => handleUpdateSpecs(index, { currentXpath: e.target.value })}
+                                                                value={btnXpath[index]?.currentXpath || ''} // Controlled input
+                                                                onChange={(e) => handleBtnXpathChange(index, e.target.value)}
+                                                                onKeyDown={(e)=>{
+                                                                    if(e.key === 'Enter') handleAddBtnXpath(index);
+                                                                }} // Handle keypress for Enter
                                                             />
+                                                            {/* Optionally display the current array of btn_xpaths */}
+                                                            <div>
+                                                                <ul className='flex flex-wrap gap-1 mt-1'>
+                                                                    {product.btn_xpaths.map((xpath, i) => {
+                                                                        const xpathCount = i + 1;
+                                                                        // <li key={index}>{xpath}</li>
+                                                                        return <li key={i}>
+                                                                            <Chip
+                                                                                color="primary"
+                                                                                onClose={() => {handleRemoveBtnXpath(index, i, xpath)}}
+                                                                                // onClose={() => {console.log(i, index)}}
+                                                                            >xpath({xpathCount})</Chip>
+                                                                        </li>
+                                                                    })}
+                                                                </ul>
+                                                            </div>
                                                         </div>
+
                                                         <div>
 
-                                                        <Autocomplete 
-                                                            variant='bordered'
-                                                            defaultItems={specsLabel[index]?.labels}
-                                                            size='sm'
-                                                            label="Label"
-                                                            inputProps={{
-                                                                classNames: {
-                                                                    inputWrapper: [
-                                                                    "group-data-[focus=true]:border-primary-400",
-                                                                    "data-[focus-visible=true]:border-primary-400",
-                                                                    "data-[open=true]:border-primary-400", "max-w-[8rem]"
-                                                                    ]
-                                                                }
-                                                            }}
-                                                            inputValue={specsLabel[index].currentLabel}
-                                                            onSelectionChange={(e)=>handleSpecsLabel(index, e)}
-                                                        >
-                                                            {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
-                                                        </Autocomplete>
+                                                            <div className='flex justify-end'>
+                                                                <PrimaryButton type="button" onPress={()=>handleAddSpecsXpath(index)} className='lower-case mb-1'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
+                                                            </div>
+                                                            <div className="flex gap-1">
+                                                                <div className="flex-1">
+                                                                    <TextInput
+                                                                        id="specs_xpath"
+                                                                        name="specs_xpath"
+                                                                        value={specsXpath[index].currentXpath}
+                                                                        autoComplete=""
+                                                                        label="Product Specs Xpath"
+                                                                        classNames={{
+                                                                            inputWrapper: "group-data-[focus=true]:border-primary-400"
+                                                                        }}
+                                                                        onChange={(e) => handleUpdateSpecs(index, { currentXpath: e.target.value })}
+                                                                    />
+                                                                </div>
+                                                                <div>
+
+                                                                <Autocomplete 
+                                                                    variant='bordered'
+                                                                    defaultItems={specsLabel[index]?.labels}
+                                                                    size='sm'
+                                                                    label="Label"
+                                                                    inputProps={{
+                                                                        classNames: {
+                                                                            inputWrapper: [
+                                                                            "group-data-[focus=true]:border-primary-400",
+                                                                            "data-[focus-visible=true]:border-primary-400",
+                                                                            "data-[open=true]:border-primary-400", "max-w-[8rem]"
+                                                                            ]
+                                                                        }
+                                                                    }}
+                                                                    inputValue={specsLabel[index].currentLabel}
+                                                                    onSelectionChange={(e)=>handleSpecsLabel(index, e)}
+                                                                >
+                                                                    {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
+                                                                </Autocomplete>
+                                                                </div>
+                                                            </div>
+
+                                                            
+                                                            <div>
+                                                                <ul className='flex flex-wrap gap-1 mt-1'>
+                                                                    {data.products[index].specs_xpaths?.map((xpath, index) => {
+                                                                        return <li key={index}>
+                                                                            <Chip
+                                                                                color="primary"
+                                                                                onClose={() => {handleRemoveSpecsXpath(xpath)}}
+                                                                            >{xpath.specs_label}</Chip>
+                                                                        </li>
+                                                                    })}
+                                                                </ul>
+                                                            </div>
+
                                                         </div>
+
                                                     </div>
 
-                                                    
-                                                    <div>
-                                                        <ul className='flex flex-wrap gap-1 mt-1'>
-                                                            {data.products[index].specs_xpaths?.map((xpath, index) => {
-                                                                return <li key={index}>
-                                                                    <Chip
-                                                                        color="primary"
-                                                                        onClose={() => {handleRemoveSpecsXpath(xpath)}}
-                                                                    >{xpath.specs_label}</Chip>
-                                                                </li>
-                                                            })}
-                                                        </ul>
-                                                    </div>
-
+                                                    {/* Product Specifications Wrapper */}
+                                                    {
+                                                        // selectedProduct &&
+                                                        // <table id="icp_product_specs_div" className="mt-4 w-full">
+                                                        //     <tbody>
+                                                        //         {
+                                                        //             selectedProduct.pspecs.split('\n').map((spec, index) => (
+                                                        //                 <tr key={index} className="border border-gray rounded">
+                                                        //                     <td className="p-1">{spec}</td>
+                                                        //                 </tr>
+                                                        //             ))
+                                                        //         }
+                                                        //     </tbody>
+                                                        // </table>
+                                                    }
+                                                    <Divider className="my-4" />
                                                 </div>
+                                            ))
+                                        }
+                                    </div>
 
-                                            </div>
-
-                                            {/* Product Specifications Wrapper */}
-                                            {
-                                                // selectedProduct &&
-                                                // <table id="icp_product_specs_div" className="mt-4 w-full">
-                                                //     <tbody>
-                                                //         {
-                                                //             selectedProduct.pspecs.split('\n').map((spec, index) => (
-                                                //                 <tr key={index} className="border border-gray rounded">
-                                                //                     <td className="p-1">{spec}</td>
-                                                //                 </tr>
-                                                //             ))
-                                                //         }
-                                                //     </tbody>
-                                                // </table>
-                                            }
-                                            <Divider className="my-4" />
-                                        </div>
-                                    ))
-                                }
-                            </div>
-
-                            <div className="flex justify-end mt-4">
-                                <PrimaryButton
-                                    className='min-w-[10rem]'
-                                    onClick={handleSubmit}
-                                >Register</PrimaryButton>
-                            </div>
-                            
+                                    <div className="flex justify-end mt-4">
+                                        <PrimaryButton
+                                            className='min-w-[10rem]'
+                                            onClick={handleSubmit}
+                                        >Register</PrimaryButton>
+                                    </div>
+                                    
 
 
-                        </form>
-                    {/* </div> */}
+                                </form>
+                            {/* </div> */}
+                        </div>
+                    </Card>
+
                 </div>
-            </Card>
 
-        </>
+            </div>
+
+        </PrimaryLayout>
     );
 }

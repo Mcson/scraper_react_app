@@ -31,6 +31,14 @@ class WebScraperController extends Controller
         ]);
     }
 
+    public function registProductView()
+    {
+        $products = $this->webScraperServices->getIcpProductsAsSelectOption();
+        return Inertia::render('RegisterProductWebsite')->with([
+            'products' => $products
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
