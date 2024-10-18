@@ -38,17 +38,30 @@ export default function RegisterProductWebsite({ products }) {
     
     // setSpecsLabel([{label: "Select", value: "0"}]);
     const [specsLabel, setSpecsLabel] = useState([
-        { labels: [{ label: "Select", value: "0" }] }, // Ensure it's always an array
+        { labels: [{ label: "Select", value: "0" }] }
     ]);
 
     // manage multiple btn xpaths
     const [btnXpath, setBtnXpath] = useState([
-        { btn_xpath: ["btn1", "btn2", "etc"] }
+        { currentXpath: "" },
+        // when i add product there will be another btn xpath input same with labels
     ]);
+
+    const handleBtnXpathChange = (index, value) => {
+        const updatedBtnXpath = btnXpath.map((btn, i) =>
+            i === index ? { ...btn, currentXpath: value } : btn // Update currentXpath for the specific product
+        );
+        setBtnXpath(updatedBtnXpath);
+    };
 
     useEffect(() => {
         console.log('Products1:', data.products[0].btn_xpaths);
         console.log('Products2:', data.products[1]?.btn_xpaths);
+        // console.log('Products1:', data.products[0]);
+        // console.log('Products2:', data.products[1] ? data.products[1] : 'none');
+
+        // console.log(btnXpath);        
+
         // console.log('Specs Label:', specsLabel);
         // console.log('labelslog: ', specsLabel[0].labels);
     }, [data.products]);
@@ -63,18 +76,17 @@ export default function RegisterProductWebsite({ products }) {
     // const [selectedProduct, setSelectedProduct] = useState(null);
     // const [outletKey, setOutletKey] = useState(null);
     // const [specsLabelKey, setSpecsLabelKey] = useState(null);
-    const [currentBtnXpath, setCurrentBtnXpath] = useState('');
     const [currentSpecsXpath, setCurrentSpecsXpath] = useState('');
     const [currentSpecsLabel, setCurrentSpecsLabel] = useState('');
 
     // Handle adding to the btn_xpaths array and resetting the input
     const handleAddBtnXpath = (productIndex) => {
-        if (currentBtnXpath.trim() !== '') {
+        if (btnXpath[productIndex].currentXpath !== '') {
             const updatedProducts = data.products.map((product, index) => {
                 if (index === productIndex) {
                     return {
                         ...product, // keep other product fields
-                        btn_xpaths: [...product.btn_xpaths, currentBtnXpath], // update btn_xpaths
+                        btn_xpaths: [...product.btn_xpaths, btnXpath[productIndex].currentXpath], // update btn_xpaths
                     };
                 }
                 return product; // return the product unchanged for other indices
@@ -84,9 +96,14 @@ export default function RegisterProductWebsite({ products }) {
             setData('products', updatedProducts);
     
             // Clear the input field
-            setCurrentBtnXpath('');
+            setBtnXpath(prev => {
+                const updatedBtnXpath = [...prev];
+                updatedBtnXpath[productIndex].currentXpath = ""; // Clear the specific input
+                return updatedBtnXpath; // Return the updated state
+            });
         }
     };
+    
     // const handleRemoveBtnXpath = (productIndex, labelIndex, xpath) => {
     //     const updatedProducts = data.products.map((product, index) => {
     //         if (index === productIndex) {
@@ -206,6 +223,10 @@ export default function RegisterProductWebsite({ products }) {
             ...prevSpecsLabel,
             { labels: [{ label: "Select", value: "0" }] } // Add new set of labels for the new product
         ]);
+        setBtnXpath(prev => [
+            ...prev,
+            { currentXpath: "" }
+        ])
     };
 
     // Function to remove a product
@@ -214,6 +235,8 @@ export default function RegisterProductWebsite({ products }) {
         setData('products', updatedProducts);
         const updatedSpecsLabel = specsLabel.filter((_, i) => i !== index); // remove corresponding specs labels
         setSpecsLabel(updatedSpecsLabel);
+        const updatedBtnXpath = btnXpath.filter((_, i) => i !== index); // remove corresponding btn xpaths
+        setBtnXpath(updatedBtnXpath);
     };
 
     // Function to handle changes in each product input
@@ -353,8 +376,8 @@ export default function RegisterProductWebsite({ products }) {
                                                         classNames={{
                                                             inputWrapper: "group-data-[focus=true]:border-primary-400"
                                                         }}
-                                                        value={currentBtnXpath} // Controlled input
-                                                        onChange={(e) => setCurrentBtnXpath(e.target.value)}
+                                                        value={btnXpath[index]?.currentXpath || ''} // Controlled input
+                                                        onChange={(e) => handleBtnXpathChange(index, e.target.value)}
                                                         onKeyDown={(e)=>{
                                                             if(e.key === 'Enter') handleAddBtnXpath(index);
                                                         }} // Handle keypress for Enter
