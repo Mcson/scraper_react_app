@@ -11,6 +11,11 @@ import Swal from 'sweetalert2';
 export default function RegisterProductWebsite({ products }) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
+    const [showRegForm, setShowRegForm] = useState(false); // Initially hidden - registration form
+    const handleRegForm = (isChecked) => {
+        setShowRegForm(isChecked);
+    };
+
     const { data, setData, post, processing, errors, reset } = useForm({
         products: [
             {
@@ -24,16 +29,29 @@ export default function RegisterProductWebsite({ products }) {
                 specs_xpaths: [],
             },
         ],
-    });
+    }); // default product
+    // const [specsLabel, setSpecsLabel] = useState([
+    //     [
+    //         { label: "Select", value: "0" }
+    //     ] // default specs label select options
+    // ]);
+    
+    // setSpecsLabel([{label: "Select", value: "0"}]);
+    const [specsLabel, setSpecsLabel] = useState([
+        { labels: [{ label: "Select", value: "0" }] }, // Ensure it's always an array
+    ]);
+
+    // manage multiple btn xpaths
+    const [btnXpath, setBtnXpath] = useState([
+        { btn_xpath: ["btn1", "btn2", "etc"] }
+    ]);
 
     useEffect(() => {
-        console.log('Products:', data.products);
+        console.log('Products1:', data.products[0].btn_xpaths);
+        console.log('Products2:', data.products[1]?.btn_xpaths);
+        // console.log('Specs Label:', specsLabel);
+        // console.log('labelslog: ', specsLabel[0].labels);
     }, [data.products]);
-
-    const [showRegForm, setShowRegForm] = useState(false); // Initially hidden - registration form
-    const handleRegForm = (isChecked) => {
-        setShowRegForm(isChecked);
-    };
 
     const outletItems = [
         {label: "Outlet 1", value: "1"},
@@ -42,10 +60,9 @@ export default function RegisterProductWebsite({ products }) {
     ]
 
     const [productKey, setProductKey] = useState(null);
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [outletKey, setOutletKey] = useState(null);
+    // const [selectedProduct, setSelectedProduct] = useState(null);
+    // const [outletKey, setOutletKey] = useState(null);
     // const [specsLabelKey, setSpecsLabelKey] = useState(null);
-    const [specsLabel, setSpecsLabel] = useState([{label: "Select", value: "0"}]); // default specs label select options
     const [currentBtnXpath, setCurrentBtnXpath] = useState('');
     const [currentSpecsXpath, setCurrentSpecsXpath] = useState('');
     const [currentSpecsLabel, setCurrentSpecsLabel] = useState('');
@@ -70,12 +87,28 @@ export default function RegisterProductWebsite({ products }) {
             setCurrentBtnXpath('');
         }
     };
-    const handleRemoveBtnXpath = (productIndex, xpath) => {
+    // const handleRemoveBtnXpath = (productIndex, labelIndex, xpath) => {
+    //     const updatedProducts = data.products.map((product, index) => {
+    //         if (index === productIndex) {
+    //             // use labelindex
+    //             return {
+    //                 ...product,
+    //                 btn_xpaths: product.btn_xpaths.filter(item => item !== xpath), // Remove the xpath
+    //             };
+    //         }
+    //         return product; // Leave other products unchanged
+    //     });
+    
+    //     // Update the state with the modified products array
+    //     setData('products', updatedProducts);
+    // };
+    const handleRemoveBtnXpath = (productIndex, labelIndex) => {
         const updatedProducts = data.products.map((product, index) => {
             if (index === productIndex) {
                 return {
                     ...product,
-                    btn_xpaths: product.btn_xpaths.filter(item => item !== xpath), // Remove the xpath
+                    // Remove the item at labelIndex
+                    btn_xpaths: product.btn_xpaths.filter((_, i) => i !== labelIndex),
                 };
             }
             return product; // Leave other products unchanged
@@ -113,9 +146,45 @@ export default function RegisterProductWebsite({ products }) {
         } 
         
     };
+
     const handleSelectProduct = (e, index) => {
-        setProductKey(e);
-        setCurrentSpecsLabel('');
+        const updatedProducts = data.products.map((product, i) =>
+            i === index ? { ...product, product_id: e } : product // Set the selected product_id
+        );
+
+        // Update the state with the modified products array
+        setData('products', updatedProducts);
+
+        // Find the selected product from the products array by id
+        const selectedProduct = products.find(prod => prod.id === Number(e));
+
+        if (selectedProduct) {
+            // Create the specs label array for the selected product
+            const labels = selectedProduct.pspecs
+                .split('\n') // Split by new lines
+                .map(line => line.trim()) // Trim whitespace
+                .filter(line => line.includes(':')) // Filter valid lines with a colon
+                .map((line, idx) => ({
+                    label: line.split(':')[0].trim(), // Extract label
+                    value: idx + 1 // Assign a value based on the index
+                }));
+
+            // Update the specsLabel state at the same index as the selected product
+            setSpecsLabel(prevSpecsLabel => {
+                const updatedSpecsLabel = [...prevSpecsLabel];
+                updatedSpecsLabel[index] = { labels }; // Update the labels for the specific product
+                return updatedSpecsLabel;
+            });
+        }
+    };
+    
+    const handleSelectOutlet = (e, index) => {
+        const updatedProducts = data.products.map((product, i) =>
+            i === index ? { ...product, outlet_id: e } : product // Set the selected product_id
+        );
+
+        // Update the state with the modified products array
+        setData('products', updatedProducts);
     };
 
     // Function to handle adding a new product
@@ -133,12 +202,18 @@ export default function RegisterProductWebsite({ products }) {
                 specs_xpaths: [],
             },
         ]);
+        setSpecsLabel(prevSpecsLabel => [
+            ...prevSpecsLabel,
+            { labels: [{ label: "Select", value: "0" }] } // Add new set of labels for the new product
+        ]);
     };
 
     // Function to remove a product
     const removeProduct = (index) => {
         const updatedProducts = data.products.filter((_, i) => i !== index);
         setData('products', updatedProducts);
+        const updatedSpecsLabel = specsLabel.filter((_, i) => i !== index); // remove corresponding specs labels
+        setSpecsLabel(updatedSpecsLabel);
     };
 
     // Function to handle changes in each product input
@@ -148,43 +223,6 @@ export default function RegisterProductWebsite({ products }) {
         );
         setData('products', updatedProducts);
     };
-
-    useEffect(()=>{
-
-        // console.log('productKey: ', productKey);
-
-        if(productKey){
-            products.map((product)=>{
-                if(productKey == product.id){
-                    // console.log('inside ifs: ', product); 
-                    setSelectedProduct(product);   
-                    setData('product_id', productKey);
-
-                    // Extract labels from pspecs
-                    const labels = product.pspecs
-                        .split('\n') // Split by new lines
-                        .map(line => line.trim()) // Remove extra spaces
-                        .filter(line => line.includes(':')) // Only keep lines with ":"
-                        .map((line, index) => {
-                        const label = line.split(':')[0].trim(); // Extract label before ":"
-                        return { label, value: index + 1 }; // Assign sequential number as value
-                        });
-
-                    setSpecsLabel(labels);
-                    // console.log("labels: ",labels);
-                    
-                }
-            })
-        } else {
-            setSelectedProduct(null);
-            setSpecsLabel([{label: "Select", value: "0"}]);
-        }
-
-        if(outletKey){
-            setData('outlet_id', outletKey);
-        }
-
-    }, [ productKey, outletKey ])
 
     const handleSubmit = (e) => {
         
@@ -239,21 +277,24 @@ export default function RegisterProductWebsite({ products }) {
                                         <div key={index}>
                                             <div className='flex justify-between'>
                                                 <h4>Product {index + 1}</h4>
-                                                <PrimaryButton type="button" color="danger" onPress={()=>{removeProduct(index)}} className='lower-case mb-1 float-end'><FontAwesomeIcon icon={faXmark}/></PrimaryButton>
+                                                {/* <Tooltip content="I am Tooltip"><span className='bg-danger text-white px-3 py-1 rounded-md hover:cursor-pointer'>Tooltip</span></Tooltip> */}
+                                                <Tooltip content="Remove Product">
+                                                    <PrimaryButton type="button" color="danger" onPress={()=>{removeProduct(index)}} className='lower-case mb-1 float-end'><FontAwesomeIcon icon={faXmark}/></PrimaryButton>
+                                                </Tooltip>
                                             </div>
                                             <div className='register_input_wrapper'>
                                                 <SelectAutocomplete
                                                     items={products}
-                                                    inputValue={product.product_id}
+                                                    // inputValue={product.product_id}
                                                     label="Select Product"
-                                                    setValue={(e) => handleProductChange(index, 'product_id', e)}
+                                                    setValue={(e)=>{handleSelectProduct(e, index)}}
                                                 />
                                                 
                                                 <SelectAutocomplete
                                                     items={outletItems}
                                                     // inputValue={outletKey}
                                                     label="Select Outlet"
-                                                    setValue={setOutletKey}
+                                                    setValue={(e)=>{handleSelectOutlet(e, index)}}
                                                 />
                                             
                                                 <TextInput
@@ -302,7 +343,7 @@ export default function RegisterProductWebsite({ products }) {
 
                                                 <div>
                                                     
-                                                    <Tooltip color="warning" content="Tooltip 1">
+                                                    <Tooltip content="Tooltip 1">
                                                         <PrimaryButton type="button" onPress={()=>{handleAddBtnXpath(index)}} className='lower-case mb-1 float-end'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
                                                     </Tooltip>
                                                     <TextInput
@@ -315,7 +356,7 @@ export default function RegisterProductWebsite({ products }) {
                                                         value={currentBtnXpath} // Controlled input
                                                         onChange={(e) => setCurrentBtnXpath(e.target.value)}
                                                         onKeyDown={(e)=>{
-                                                            if(e.key === 'Enter') handleAddBtnXpath(e);
+                                                            if(e.key === 'Enter') handleAddBtnXpath(index);
                                                         }} // Handle keypress for Enter
                                                     />
                                                     {/* Optionally display the current array of btn_xpaths */}
@@ -327,7 +368,8 @@ export default function RegisterProductWebsite({ products }) {
                                                                 return <li key={i}>
                                                                     <Chip
                                                                         color="primary"
-                                                                        onClose={() => {handleRemoveBtnXpath(i, xpath)}}
+                                                                        onClose={() => {handleRemoveBtnXpath(index, i, xpath)}}
+                                                                        // onClose={() => {console.log(i, index)}}
                                                                     >xpath({xpathCount})</Chip>
                                                                 </li>
                                                             })}
@@ -357,25 +399,25 @@ export default function RegisterProductWebsite({ products }) {
                                                         </div>
                                                         <div>
 
-                                                            <Autocomplete 
-                                                                variant='bordered'
-                                                                defaultItems={specsLabel}
-                                                                size='sm'
-                                                                label="Label"
-                                                                inputProps={{
-                                                                    classNames: {
-                                                                        inputWrapper: [
-                                                                        "group-data-[focus=true]:border-primary-400",
-                                                                        "data-[focus-visible=true]:border-primary-400",
-                                                                        "data-[open=true]:border-primary-400", "max-w-[8rem]"
-                                                                        ]
-                                                                    }
-                                                                }}
-                                                                inputValue={currentSpecsLabel}
-                                                                onSelectionChange={(e)=>handleSpecsLabel(e)}
-                                                            >
-                                                                {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
-                                                            </Autocomplete>
+                                                        <Autocomplete 
+                                                            variant='bordered'
+                                                            defaultItems={specsLabel[index]?.labels}
+                                                            size='sm'
+                                                            label="Label"
+                                                            inputProps={{
+                                                                classNames: {
+                                                                    inputWrapper: [
+                                                                    "group-data-[focus=true]:border-primary-400",
+                                                                    "data-[focus-visible=true]:border-primary-400",
+                                                                    "data-[open=true]:border-primary-400", "max-w-[8rem]"
+                                                                    ]
+                                                                }
+                                                            }}
+                                                            inputValue={currentSpecsLabel}
+                                                            onSelectionChange={(e)=>handleSpecsLabel(e)}
+                                                        >
+                                                            {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
+                                                        </Autocomplete>
                                                         </div>
                                                     </div>
 
