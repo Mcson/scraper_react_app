@@ -47,6 +47,12 @@ export default function RegisterProductWebsite({ products }) {
         // when i add product there will be another btn xpath input same with labels
     ]);
 
+    // manage multiple btn xpaths
+    const [specsXpath, setSpecsXpath] = useState([
+        { currentLabel: "", currentXpath: "" },
+        // when i add product it should also add another specs label object
+    ]);
+
     const handleBtnXpathChange = (index, value) => {
         const updatedBtnXpath = btnXpath.map((btn, i) =>
             i === index ? { ...btn, currentXpath: value } : btn // Update currentXpath for the specific product
@@ -55,8 +61,8 @@ export default function RegisterProductWebsite({ products }) {
     };
 
     useEffect(() => {
-        console.log('Products1:', data.products[0].btn_xpaths);
-        console.log('Products2:', data.products[1]?.btn_xpaths);
+        // console.log('Products1:', data.products[0].btn_xpaths);
+        // console.log('Products2:', data.products[1]?.btn_xpaths);
         // console.log('Products1:', data.products[0]);
         // console.log('Products2:', data.products[1] ? data.products[1] : 'none');
 
@@ -64,6 +70,11 @@ export default function RegisterProductWebsite({ products }) {
 
         // console.log('Specs Label:', specsLabel);
         // console.log('labelslog: ', specsLabel[0].labels);
+
+        // console.log(specsXpath);
+        // console.log(specsLabel);
+        // console.log(specsXpath);
+        
     }, [data.products]);
 
     const outletItems = [
@@ -76,8 +87,8 @@ export default function RegisterProductWebsite({ products }) {
     // const [selectedProduct, setSelectedProduct] = useState(null);
     // const [outletKey, setOutletKey] = useState(null);
     // const [specsLabelKey, setSpecsLabelKey] = useState(null);
-    const [currentSpecsXpath, setCurrentSpecsXpath] = useState('');
-    const [currentSpecsLabel, setCurrentSpecsLabel] = useState('');
+    // const [currentSpecsXpath, setCurrentSpecsXpath] = useState('');
+    // const [currentSpecsLabel, setCurrentSpecsLabel] = useState('');
 
     // Handle adding to the btn_xpaths array and resetting the input
     const handleAddBtnXpath = (productIndex) => {
@@ -103,7 +114,7 @@ export default function RegisterProductWebsite({ products }) {
             });
         }
     };
-    
+
     // const handleRemoveBtnXpath = (productIndex, labelIndex, xpath) => {
     //     const updatedProducts = data.products.map((product, index) => {
     //         if (index === productIndex) {
@@ -135,30 +146,66 @@ export default function RegisterProductWebsite({ products }) {
         setData('products', updatedProducts);
     };
 
-    // handle specs label
-    const handleSpecsLabel = (key) => {
-        specsLabel?.map((item)=>{
-            if(item.value == key){
-                setCurrentSpecsLabel(item.label);
-            }
-        })
+    // handle current specs value
+    const handleUpdateSpecs = (productIndex, updates) => {
+        setSpecsXpath(prev => {
+            const updatedSpecs = [...prev]; // Copy current state
+            updatedSpecs[productIndex] = {
+                ...updatedSpecs[productIndex], // Keep other fields unchanged
+                ...updates // Spread the updates (can be newLabel, newXpath, or both)
+            };
+            return updatedSpecs; // Return updated state
+        });
+        // handleUpdateSpecs(productIndex, { currentXpath: newXpath });
+    };
+    const handleSpecsLabel = (index, value) => {        
+        const selectedLabel = specsLabel[index].labels.find(item => item.value === parseInt(value));
+        
+        // Update currentLabel using the label found
+        if (selectedLabel) {
+            handleUpdateSpecs(index, { currentLabel: selectedLabel.label });
+        }
     }
     const handleRemoveSpecsXpath = (xpath) => {
         setData('specs_xpaths', data.specs_xpaths.filter(item => item !== xpath));
     }
 
     // Handle adding the object to specs_xpaths array
-    const handleAddSpecsXpath = () => {
-        if (currentSpecsXpath.trim() !== '' && currentSpecsLabel.trim() !== '' && currentSpecsLabel.trim() !== 'Select') {
-            // Add both the specs_label and specs_xpath as an object
-            setData('specs_xpaths', [
-                ...data.specs_xpaths, 
-                { specs_label: currentSpecsLabel, specs_xpath: currentSpecsXpath }
-            ]);
+    const handleAddSpecsXpath = (index) => {
 
-            // Reset both input fields after adding
-            setCurrentSpecsXpath(''); // Clear local state for specs_xpath
-            setCurrentSpecsLabel(''); // Clear local state for the label
+        console.log('specs_xpath:', specsXpath[index].currentXpath);
+        console.log('specs_label:', specsXpath[index].currentLabel);
+        if (specsXpath[index].currentLabel !== '' && specsXpath[index].currentXpath !== '' && specsXpath[index].currentLabel !== 'Select') {
+
+            // Map over the products and update the specs_xpaths for the right product
+            const updatedProducts = data.products.map((product, productIndex) => {
+                if (productIndex === index) {
+                    return {
+                        ...product,
+                        specs_xpaths: [
+                            ...product.specs_xpaths, // Keep the existing specs_xpaths
+                            {
+                                specs_label: specsXpath[index].currentLabel,
+                                specs_xpath: specsXpath[index].currentXpath
+                            }
+                        ]
+                    };
+                }
+                return product; // Leave other products unchanged
+            });
+
+            // Update the form data using setData (if using useForm)
+            setData('products', updatedProducts);
+
+            // Clear the input for the current product
+            setSpecsXpath(prev => {
+                const updatedSpecs = [...prev];
+                updatedSpecs[index] = {
+                    currentLabel: '',
+                    currentXpath: ''
+                };
+                return updatedSpecs;
+            });
             
         } 
         
@@ -219,13 +266,20 @@ export default function RegisterProductWebsite({ products }) {
                 specs_xpaths: [],
             },
         ]);
+        // handle current specs label input options/values
         setSpecsLabel(prevSpecsLabel => [
             ...prevSpecsLabel,
             { labels: [{ label: "Select", value: "0" }] } // Add new set of labels for the new product
         ]);
+        // handle current btnxpath inputs
         setBtnXpath(prev => [
             ...prev,
             { currentXpath: "" }
+        ])
+        // handle current specs inputs
+        setSpecsXpath(prev => [
+            ...prev,
+            { currentLabel: "", currentXpath: "" }
         ])
     };
 
@@ -237,6 +291,8 @@ export default function RegisterProductWebsite({ products }) {
         setSpecsLabel(updatedSpecsLabel);
         const updatedBtnXpath = btnXpath.filter((_, i) => i !== index); // remove corresponding btn xpaths
         setBtnXpath(updatedBtnXpath);
+        const updatedSpecsXpath = specsXpath.filter((_, i) => i !== index); // remove corresponding btn xpaths
+        setSpecsXpath(updatedSpecsXpath);
     };
 
     // Function to handle changes in each product input
@@ -403,21 +459,20 @@ export default function RegisterProductWebsite({ products }) {
                                                 <div>
 
                                                     <div className='flex justify-end'>
-                                                        <PrimaryButton type="button" onPress={handleAddSpecsXpath} className='lower-case mb-1'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
+                                                        <PrimaryButton type="button" onPress={()=>handleAddSpecsXpath(index)} className='lower-case mb-1'><FontAwesomeIcon icon={faPlus}/></PrimaryButton>
                                                     </div>
                                                     <div className="flex gap-1">
                                                         <div className="flex-1">
                                                             <TextInput
                                                                 id="specs_xpath"
                                                                 name="specs_xpath"
-                                                                value={currentSpecsXpath}
+                                                                value={specsXpath[index].currentXpath}
                                                                 autoComplete=""
                                                                 label="Product Specs Xpath"
                                                                 classNames={{
                                                                     inputWrapper: "group-data-[focus=true]:border-primary-400"
                                                                 }}
-                                                                onChange={(e) => setCurrentSpecsXpath(e.target.value)}
-                                                                // onKeyDown={handleAddSpecsXpath} // Handle keypress for Enter
+                                                                onChange={(e) => handleUpdateSpecs(index, { currentXpath: e.target.value })}
                                                             />
                                                         </div>
                                                         <div>
@@ -436,8 +491,8 @@ export default function RegisterProductWebsite({ products }) {
                                                                     ]
                                                                 }
                                                             }}
-                                                            inputValue={currentSpecsLabel}
-                                                            onSelectionChange={(e)=>handleSpecsLabel(e)}
+                                                            inputValue={specsLabel[index].currentLabel}
+                                                            onSelectionChange={(e)=>handleSpecsLabel(index, e)}
                                                         >
                                                             {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
                                                         </Autocomplete>
@@ -445,9 +500,9 @@ export default function RegisterProductWebsite({ products }) {
                                                     </div>
 
                                                     
-                                                    {/* <div>
+                                                    <div>
                                                         <ul className='flex flex-wrap gap-1 mt-1'>
-                                                            {data.products.specs_xpaths.map((xpath, index) => {
+                                                            {data.products[index].specs_xpaths?.map((xpath, index) => {
                                                                 return <li key={index}>
                                                                     <Chip
                                                                         color="primary"
@@ -456,7 +511,7 @@ export default function RegisterProductWebsite({ products }) {
                                                                 </li>
                                                             })}
                                                         </ul>
-                                                    </div> */}
+                                                    </div>
 
                                                 </div>
 
