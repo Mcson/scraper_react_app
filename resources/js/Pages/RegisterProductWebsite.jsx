@@ -71,7 +71,7 @@ export default function RegisterProductWebsite({ products }) {
         // console.log('Specs Label:', specsLabel);
         // console.log('bt:', btnXpath);
         // console.log('specs:', specsXpath);
-        console.log('selected:', selectedProduct);
+        // console.log('selected:', selectedProduct);
         
     }, [data.products]);
 
@@ -383,8 +383,8 @@ export default function RegisterProductWebsite({ products }) {
 
 
             <div className="py-12 min-h-[75vh]">
-                <div className="h-full mx-auto max-w-7xl sm:px-6 lg:px-8">   
-                    <Card className="py-12">
+                <div className="h-full mx-auto max-w-7xl sm:px-6 lg:px-8 overflow-y-auto">   
+                    <Card className="py-12 max-h-[85vh] overflow-y-auto">
                         <div className="sm:px-6 lg:px-8">
                             {/* <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg"> */}
 
