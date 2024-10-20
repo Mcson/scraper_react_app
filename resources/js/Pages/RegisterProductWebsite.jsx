@@ -77,12 +77,6 @@ export default function RegisterProductWebsite({ products }) {
         {label: "Outlet 3", value: "3"},
     ]
 
-    // const [productKey, setProductKey] = useState(null);
-    // const [selectedProduct, setSelectedProduct] = useState(null);
-    // const [outletKey, setOutletKey] = useState(null);
-    // const [specsLabelKey, setSpecsLabelKey] = useState(null);
-    // const [currentSpecsXpath, setCurrentSpecsXpath] = useState('');
-    // const [currentSpecsLabel, setCurrentSpecsLabel] = useState('');
 
     // Handle adding to the btn_xpaths array and resetting the input
     const handleAddBtnXpath = (productIndex) => {
@@ -109,28 +103,13 @@ export default function RegisterProductWebsite({ products }) {
         }
     };
 
-    // const handleRemoveBtnXpath = (productIndex, labelIndex, xpath) => {
-    //     const updatedProducts = data.products.map((product, index) => {
-    //         if (index === productIndex) {
-    //             // use labelindex
-    //             return {
-    //                 ...product,
-    //                 btn_xpaths: product.btn_xpaths.filter(item => item !== xpath), // Remove the xpath
-    //             };
-    //         }
-    //         return product; // Leave other products unchanged
-    //     });
-    
-    //     // Update the state with the modified products array
-    //     setData('products', updatedProducts);
-    // };
-    const handleRemoveBtnXpath = (productIndex, labelIndex) => {
+    const handleRemoveBtnXpath = (productIndex) => {
         const updatedProducts = data.products.map((product, index) => {
             if (index === productIndex) {
                 return {
                     ...product,
                     // Remove the item at labelIndex
-                    btn_xpaths: product.btn_xpaths.filter((_, i) => i !== labelIndex),
+                    btn_xpaths: product.btn_xpaths.filter((_, i) => i !== productIndex),
                 };
             }
             return product; // Leave other products unchanged
@@ -160,9 +139,22 @@ export default function RegisterProductWebsite({ products }) {
             handleUpdateSpecs(index, { currentLabel: selectedLabel.label });
         }
     }
-    const handleRemoveSpecsXpath = (xpath) => {
-        setData('specs_xpaths', data.specs_xpaths.filter(item => item !== xpath));
-    }
+
+    const handleRemoveSpecsXpath = (productIndex, labelIndex) => {
+        const updatedProducts = data.products.map((product, index) => {
+            if (index === productIndex) {
+                return {
+                    ...product,
+                    // Remove the specs_xpath at labelIndex
+                    specs_xpaths: product.specs_xpaths.filter((_, i) => i !== labelIndex),
+                };
+            }
+            return product; // Leave other products unchanged
+        });
+    
+        // Update the state with the modified products array
+        setData('products', updatedProducts);
+    };
 
     // Handle adding the object to specs_xpaths array
     const handleAddSpecsXpath = (index) => {
@@ -477,7 +469,7 @@ export default function RegisterProductWebsite({ products }) {
                                                                             return <li key={i}>
                                                                                 <Chip
                                                                                     color="primary"
-                                                                                    onClose={() => {handleRemoveBtnXpath(index, i, xpath)}}
+                                                                                    onClose={() => {handleRemoveBtnXpath(index)}}
                                                                                 >xpath({xpathCount})</Chip>
                                                                             </li>
                                                                         })
@@ -536,11 +528,11 @@ export default function RegisterProductWebsite({ products }) {
                                                             <div>
                                                                 <ul className='flex flex-wrap gap-1 mt-1'>
                                                                 {
-                                                                    data.products && data.products.length > 0 && data.products[index]?.specs_xpaths?.map((xpath, index) => {
-                                                                        return <li key={index}>
+                                                                    data.products && data.products.length > 0 && data.products[index]?.specs_xpaths?.map((xpath, i) => {
+                                                                        return <li key={i}>
                                                                             <Chip
                                                                                 color="primary"
-                                                                                onClose={() => {handleRemoveSpecsXpath(xpath)}}
+                                                                                onClose={() => {handleRemoveSpecsXpath(index, i)}}
                                                                             >{xpath.specs_label}</Chip>
                                                                         </li>
                                                                     })
