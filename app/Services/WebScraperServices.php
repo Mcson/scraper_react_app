@@ -101,4 +101,10 @@ class WebScraperServices
 
         return response()->json(['success' => 'Product Website saved successfully!']);
     }
+
+    public function getRegisteredProductWebsite()
+    {
+        $data = ProductWebsite::paginate(10);
+        return $data;
+    }
 }

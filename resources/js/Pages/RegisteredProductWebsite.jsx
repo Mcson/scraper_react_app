@@ -1,20 +1,22 @@
 import TableComp from "@/Components/TableComp";
-import { faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import PrimaryLayout from "@/Layouts/PrimaryLayout";
+import { faGaugeHigh, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Chip, Tooltip } from "@nextui-org/react";
+import { Card, Chip, Tooltip } from "@nextui-org/react";
+import { Head, router } from '@inertiajs/react';
 
-export default function RegisteredProductWebsite() { // add props and pass data here
+export default function RegisteredProductWebsite({ registered_products }) { // add props and pass data here
 
     // registered dummy datas
     const registeredTableHeader = [
         // change the field values, it needs to be identical with the column name from DB
-        { label: 'Product Code', field: 'code' },
-        { label: 'Product Name', field: 'name' },
+        { label: 'Product Code', field: 'pcode' },
+        { label: 'Product Name', field: 'pname' },
         { label: 'Url', field: 'url' },
-        { label: 'Terms Url', field: 'terms_url' },
+        { label: 'Terms Url', field: 'terms_condition_url' },
         { label: 'Title', field: 'title' },
         { label: 'Price', field: 'price' },
-        { label: 'Outlet', field: 'outlet' },
+        { label: 'Outlet', field: 'outlet_id' },
         {
           label: 'Status',
           key: 'status',
@@ -32,20 +34,20 @@ export default function RegisteredProductWebsite() { // add props and pass data 
             );
           }
         },
-        { label: 'Registered Date', field: 'registered' },
+        { label: 'Registered Date', field: 'created_at' },
         { 
             label: 'Action', 
             field: 'action',
             render: (td) => (
                 <div className='flex gap-1'>
                     <Tooltip color="success" content="Update">
-                        <span className="text-lg text-success cursor-pointer active:opacity-50" onClick={() => alert(`Editing ${td.name}`)}>
+                        <span className="text-lg text-success cursor-pointer active:opacity-50" onClick={() => alert(`Editing ${td.pname}`)}>
                             <FontAwesomeIcon icon={faPenToSquare} />
                         </span>
                     </Tooltip>
                     
                     <Tooltip color="danger" content="Delete">
-                        <span className="text-lg text-danger cursor-pointer active:opacity-50" onClick={() => alert(`Deleting ${td.name}`)}>
+                        <span className="text-lg text-danger cursor-pointer active:opacity-50" onClick={() => alert(`Deleting ${td.pname}`)}>
                             <FontAwesomeIcon icon={faTrashCan} />
                         </span>
                     </Tooltip>
@@ -54,18 +56,31 @@ export default function RegisteredProductWebsite() { // add props and pass data 
         },
     ];
 
-    const registeredTableData = [
-        // must always gave id prop, it is used as key
-        { id: 1, code: 1, name: 'John Doe', url: 28, terms_url: 'john.example.com', title: 'title', price: 'price', outlet: 'outlet', status: 'active', registered: 'registered' },
-        { id: 2, code: 2, name: 'Jane Smith', url: 34, terms_url: 'jane.example.com', title: 'title', price: 'price', outlet: 'outlet', status: 'inactive', registered: 'registered' },
-        { id: 3, code: 3, name: 'Sam Green', url: 25, terms_url: 'sam.example.com', title: 'title', price: 'price', outlet: 'outlet', status: 'pending', registered: 'registered' },
-    ];
+    const handlePageChange = (page) => {
+        router.visit(route('registered.product.website', {page}), {
+            preserveScroll: true,
+            preserveState: true
+        })
+    }
 
     return (
-        <>
+        <PrimaryLayout
+            header={
+                <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                  <FontAwesomeIcon icon={faGaugeHigh} className="text-primary-500 mr-2" />   Registered Product Website
+                </h2>
+            }
+        >
+            <Head title="Registered Product Website" />
 
-            <TableComp tableHeader={registeredTableHeader} tableData={registeredTableData}/>
+            <div className="py-12 min-h-[75vh]">
+                <div className="h-full mx-auto max-w-7xl sm:px-6 lg:px-8 overflow-y-auto">   
+                    <Card className="max-h-[85vh] overflow-y-auto p-3">
+                        <TableComp tableHeader={registeredTableHeader} tableData={registered_products} onPageChange={handlePageChange}/>
+                    </Card>
+                </div>
+            </div>
 
-        </>
+        </PrimaryLayout>
     );
 }

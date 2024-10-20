@@ -80,6 +80,15 @@ class WebScraperController extends Controller
         
     }
 
+    public function registeredProductView()
+    {
+        $registeredProducts = $this->webScraperServices->getRegisteredProductWebsite();
+        // dd($registeredProducts);
+        return Inertia::render('RegisteredProductWebsite')->with([
+            'registered_products' => $registeredProducts
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */

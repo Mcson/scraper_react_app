@@ -21,6 +21,12 @@ export const menuItems = [
                 title: "Register Product",
                 href: "register.product",
                 icon: faFolderOpen
+            },
+            {
+                id: 22,
+                title: "Registered Product Website",
+                href: "registered.product.website",
+                icon: faFolderOpen
             }
         ], 
     },
