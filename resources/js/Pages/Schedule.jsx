@@ -43,14 +43,14 @@ export default function Schedule({data, productsData}) {
     return (
         <PrimaryLayout
             header={
-                <div className='flex gap-x-8 justify-between'>
+                <div className='flex gap-x-8 justify-between items-center'>
                     <h2 className="text-xl font-semibold float-start leading-tight text-gray-800">
                     <FontAwesomeIcon icon={faCalendarDays} className="text-primary-500 mr-2" /> 
                     Schedule Products
                     </h2>
 
 
-                    <PrimaryButton className='lower-case' startContent={<FontAwesomeIcon icon={faPlus}/>} onPress={handleAddScheduleToggle}>Create Schedule</PrimaryButton>
+                    
                 </div>
             }
         >
@@ -60,6 +60,10 @@ export default function Schedule({data, productsData}) {
                 <div className="h-full mx-auto max-w-7xl sm:px-6 lg:px-8">   
                 
                 <Card className="min-h-[75vh] p-3">
+                <div className=" px-3 pb-3 w-full flex justify-end">
+
+                <PrimaryButton className='lower-case' startContent={<FontAwesomeIcon icon={faPlus}/>} onPress={handleAddScheduleToggle}>Create Schedule</PrimaryButton>
+                </div>
                 <ScheduledProductsTable data={data} onPageChange={handlePageChange} onEditProduct={handleEditSchedule}/>
                 </Card>
 
