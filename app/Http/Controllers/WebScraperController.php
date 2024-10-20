@@ -44,22 +44,31 @@ class WebScraperController extends Controller
      */
     public function createProductWebsite(Request $request)
     {
-        // dd($request->all());
 
-        // Define the validation rules
-        // $rules = [
-        //     'products' => 'required|array',
-        //     'products.*.product_id' => 'required|exists:household_products,id',
-        //     'products.*.outlet_id' => 'required|integer',
-        //     'products.*.terms_url' => 'required|url',
-        //     'products.*.product_url' => 'required|url',
-        //     'products.*.product_title_xpath' => 'required|string',
-        //     'products.*.product_price_xpath' => 'required|string',
-        //     'products.*.btn_xpaths' => 'required|array',
-        //     'products.*.btn_xpaths.*' => 'required|string',
-        //     'products.*.specs_xpaths' => 'required|array',
-        //     'products.*.specs_xpaths.*' => 'required|string',
-        // ];
+        $request->validate([
+            'products' => 'required|array|min:1',
+            'products.*.product_id' => 'required|string',
+            'products.*.outlet_id' => 'required|string|nullable',
+            'products.*.terms_url' => 'required|string|nullable',
+            'products.*.product_url' => 'required|string|nullable',
+            'products.*.product_title_xpath' => 'required|string|nullable',
+            'products.*.product_price_xpath' => 'required|string|nullable',
+            'products.*.btn_xpaths' => 'required|array|min:1',
+            'products.*.btn_xpaths.*' => 'required|string',
+            'products.*.specs_xpaths' => 'required|array|min:1',
+            'products.*.specs_xpaths.*.specs_label' => 'required|string',
+            'products.*.specs_xpaths.*.specs_xpath' => 'required|string',
+        ], [            
+            'products.*.product_id.required' => 'Product ID is required.',
+            'products.*.outlet_id.required' => 'Outlet ID is required.',
+            'products.*.terms_url.required' => 'The Terms URL is required.',
+            'products.*.product_url.required' => 'The Product URL is required.',
+            'products.*.product_title_xpath.required' => 'The Product Title XPath is required.',
+            'products.*.product_price_xpath.required' => 'The Product Price XPath is required.',
+            'products.*.btn_xpaths.required' => 'At least one Button XPath is required.',
+            'products.*.specs_xpaths.required' => 'At least one Specs XPath is required.',
+        ]);
+        // dd($request->all());
 
         try {
             $products = $this->webScraperServices->registerProductWebsite($request->all());
