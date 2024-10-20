@@ -375,7 +375,7 @@ export default function RegisterProductWebsite({ products }) {
         <PrimaryLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                  <FontAwesomeIcon icon={faGaugeHigh} className="text-primary-500 mr-2" />   Dashboard
+                  <FontAwesomeIcon icon={faGaugeHigh} className="text-primary-500 mr-2" />   Register Product
                 </h2>
             }
         >

@@ -1,8 +1,29 @@
-import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell} from "@nextui-org/react";
+import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination} from "@nextui-org/react";
 
-export default function TableComp({ tableHeader, tableData, ...props }) {
+export default function TableComp({ tableHeader, tableData, onPageChange, ...props }) {
   return (
-    <Table variant="light" removeWrapper aria-label="Example static collection table" {...props}>
+    <Table 
+      variant="light" 
+      removeWrapper 
+      aria-label="Example static collection table" 
+      {...props}
+      bottomContent = {
+        tableData.data.length > 0 && (
+          <div className="flex w-full justify-center">
+            <Pagination 
+              total={tableData.last_page}
+              initialPage={tableData.current_page}
+              onChange={onPageChange}
+              showControls
+              color="primary"
+              classNames={{
+                  cursor: "bg-primary"
+              }}
+            />
+          </div>
+        )
+      }
+    >
       <TableHeader>
 
         {
@@ -15,7 +36,7 @@ export default function TableComp({ tableHeader, tableData, ...props }) {
       <TableBody>
 
         {
-          tableData.map((td) => (
+          tableData.data.map((td) => (
             <TableRow key={td.id}>
 
               {tableHeader.map((th, index) => (
