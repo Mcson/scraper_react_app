@@ -21,16 +21,16 @@ export default function RegisterProductWebsite({ products }) {
 
     const { data, setData, post, processing, errors, reset } = useForm({
         products: [
-            {
-                product_id: '',
-                outlet_id: '',
-                terms_url: '',
-                product_url: '',
-                product_title_xpath: '',
-                product_price_xpath: '',
-                btn_xpaths: [],
-                specs_xpaths: [],
-            },
+            // {
+            //     product_id: '',
+            //     outlet_id: '',
+            //     terms_url: '',
+            //     product_url: '',
+            //     product_title_xpath: '',
+            //     product_price_xpath: '',
+            //     btn_xpaths: [],
+            //     specs_xpaths: [],
+            // },
         ],
     }); // default product
     // const [specsLabel, setSpecsLabel] = useState([
@@ -41,18 +41,18 @@ export default function RegisterProductWebsite({ products }) {
     
     // setSpecsLabel([{label: "Select", value: "0"}]);
     const [specsLabel, setSpecsLabel] = useState([
-        { labels: [{ label: "Select", value: "0" }] }
+        // { labels: [{ label: "Select", value: "0" }] }
     ]);
 
     // manage multiple btn xpaths
     const [btnXpath, setBtnXpath] = useState([
-        { currentXpath: "" },
+        // { currentXpath: "" },
         // when i add product there will be another btn xpath input same with labels
     ]);
 
     // manage multiple btn xpaths
     const [specsXpath, setSpecsXpath] = useState([
-        { currentLabel: "", currentXpath: "" },
+        // { currentLabel: "", currentXpath: "" },
         // when i add product it should also add another specs label object
     ]);
 
@@ -63,12 +63,7 @@ export default function RegisterProductWebsite({ products }) {
         setBtnXpath(updatedBtnXpath);
     };
 
-    useEffect(() => {
-        // console.log('Products1:', data.products[0].btn_xpaths);
-        // console.log('Products2:', data.products[1]?.btn_xpaths);
-        // console.log('Products1:', data.products[0]);
-        // console.log('Products2:', data.products[1] ? data.products[1] : 'none');
-     
+    useEffect(() => {     
         console.log('Product:', data);
         console.log('Specs Label:', specsLabel);
         console.log('bt:', btnXpath);
@@ -313,6 +308,7 @@ export default function RegisterProductWebsite({ products }) {
                         title: 'Success!',
                         text: msg.success,
                     }).then(() => {
+                        setShowRegForm(false);
                         setData({ products: [] });
                         setSpecsLabel([]);
                         setBtnXpath([]);
@@ -349,7 +345,7 @@ export default function RegisterProductWebsite({ products }) {
 
 
                                 <div className="flex items-center mb-8 content-center">
-                                    <input id="checkbox" type="checkbox" className="form-checkbox h-5 w-5 text-blue-600" onChange={(e)=>handleRegForm(e.target.checked)} />
+                                    <input id="checkbox" type="checkbox" className="form-checkbox h-5 w-5 text-blue-600" onChange={(e)=>handleRegForm(e.target.checked)} checked={showRegForm}/>
                                     <label for="checkbox" className="ml-2 text-gray-700">I confirm that I have reviewed the <b>Terms and Condition</b> of the website I am about to register and Have found that web scraping is legally allowed. I hold all responsibility for the web scraping activity about the be performed.</label>
                                 </div>
 
@@ -577,12 +573,15 @@ export default function RegisterProductWebsite({ products }) {
                                         }
                                     </div>
 
-                                    <div className="flex justify-end mt-4">
-                                        <PrimaryButton
-                                            className='min-w-[10rem]'
-                                            onClick={handleSubmit}
-                                        >Register</PrimaryButton>
-                                    </div>
+                                    {
+                                        data.products.length > 0 &&                                        
+                                        <div className="flex justify-end mt-4">
+                                            <PrimaryButton
+                                                className='min-w-[10rem]'
+                                                onClick={handleSubmit}
+                                            >Register</PrimaryButton>
+                                        </div>
+                                    }
                                     
 
 
