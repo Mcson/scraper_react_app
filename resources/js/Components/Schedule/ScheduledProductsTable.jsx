@@ -82,7 +82,7 @@ export default function ScheduledProductsTable({data, onPageChange, onEditProduc
                 {
                     data.data.length == 0
                     ?
-                    <TableBody emptyContent={"No Users to display."}>{[]}</TableBody>
+                    <TableBody emptyContent={"No scheduled products to display."}>{[]}</TableBody>
                     :
                     <TableBody>
                         {data.data.map((product) => (
