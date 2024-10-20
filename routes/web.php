@@ -31,6 +31,8 @@ Route::get('/dashboard', function () {
 // Route::get('/register/website', [ProductsWebsiteController::class, 'index'])->middleware(['auth', 'verified'])->name('register.website');
 Route::get('/scraper', [WebScraperController::class, 'index'])->middleware(['auth', 'verified'])->name('scraper');
 
+Route::get('/register-product', [WebScraperController::class, 'registProductView'])->middleware(['auth', 'verified'])->name('register.product');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

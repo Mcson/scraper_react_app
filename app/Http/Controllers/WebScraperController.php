@@ -31,11 +31,43 @@ class WebScraperController extends Controller
         ]);
     }
 
+    public function registProductView()
+    {
+        $products = $this->webScraperServices->getIcpProductsAsSelectOption();
+        return Inertia::render('RegisterProductWebsite')->with([
+            'products' => $products
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
     public function createProductWebsite(Request $request)
     {
+
+        $request->validate([
+            'products' => 'required|array|min:1',
+            'products.*.product_id' => 'required|string',
+            'products.*.outlet_id' => 'required|string|nullable',
+            'products.*.terms_url' => 'required|string|nullable',
+            'products.*.product_url' => 'required|string|nullable',
+            'products.*.product_title_xpath' => 'required|string|nullable',
+            'products.*.product_price_xpath' => 'required|string|nullable',
+            'products.*.btn_xpaths' => 'required|array|min:1',
+            'products.*.btn_xpaths.*' => 'required|string',
+            'products.*.specs_xpaths' => 'required|array|min:1',
+            'products.*.specs_xpaths.*.specs_label' => 'required|string',
+            'products.*.specs_xpaths.*.specs_xpath' => 'required|string',
+        ], [            
+            'products.*.product_id.required' => 'Product ID is required.',
+            'products.*.outlet_id.required' => 'Outlet ID is required.',
+            'products.*.terms_url.required' => 'The Terms URL is required.',
+            'products.*.product_url.required' => 'The Product URL is required.',
+            'products.*.product_title_xpath.required' => 'The Product Title XPath is required.',
+            'products.*.product_price_xpath.required' => 'The Product Price XPath is required.',
+            'products.*.btn_xpaths.required' => 'At least one Button XPath is required.',
+            'products.*.specs_xpaths.required' => 'At least one Specs XPath is required.',
+        ]);
         // dd($request->all());
 
         try {
