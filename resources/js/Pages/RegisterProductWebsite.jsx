@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faGaugeHigh, faMinus, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import PrimaryButton from '@/Components/PrimaryButton';
-import { Autocomplete, AutocompleteItem, Card, Chip, Divider, Tooltip } from '@nextui-org/react';
+import { Accordion, AccordionItem, Autocomplete, AutocompleteItem, Card, Chip, Divider, Tooltip } from '@nextui-org/react';
 import TextInput from '@/Components/TextInput';
 import { useForm } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
@@ -56,6 +56,9 @@ export default function RegisterProductWebsite({ products }) {
         // when i add product it should also add another specs label object
     ]);
 
+    // manage multiple btn xpaths
+    const [selectedProduct, setSelectedProduct] = useState([]);
+
     const handleBtnXpathChange = (index, value) => {
         const updatedBtnXpath = btnXpath.map((btn, i) =>
             i === index ? { ...btn, currentXpath: value } : btn // Update currentXpath for the specific product
@@ -64,10 +67,11 @@ export default function RegisterProductWebsite({ products }) {
     };
 
     useEffect(() => {     
-        console.log('Product:', data);
-        console.log('Specs Label:', specsLabel);
-        console.log('bt:', btnXpath);
-        console.log('specs:', specsXpath);
+        // console.log('Product:', data);
+        // console.log('Specs Label:', specsLabel);
+        // console.log('bt:', btnXpath);
+        // console.log('specs:', specsXpath);
+        console.log('selected:', selectedProduct);
         
     }, [data.products]);
 
@@ -131,14 +135,32 @@ export default function RegisterProductWebsite({ products }) {
         });
         // handleUpdateSpecs(productIndex, { currentXpath: newXpath });
     };
-    const handleSpecsLabel = (index, value) => {        
+
+    const handleSpecsLabel = (index, value) => {
         const selectedLabel = specsLabel[index].labels.find(item => item.value === parseInt(value));
         
         // Update currentLabel using the label found
         if (selectedLabel) {
-            handleUpdateSpecs(index, { currentLabel: selectedLabel.label });
+            setSpecsXpath(prev => {
+                const updatedSpecs = [...prev];
+                updatedSpecs[index] = {
+                    ...updatedSpecs[index],
+                    currentLabel: selectedLabel.label // Update currentLabel here
+                };
+                return updatedSpecs;
+            });
+        } else {
+            // Optional: Reset currentLabel if nothing is selected
+            setSpecsXpath(prev => {
+                const updatedSpecs = [...prev];
+                updatedSpecs[index] = {
+                    ...updatedSpecs[index],
+                    currentLabel: '' // Reset if no label is found
+                };
+                return updatedSpecs;
+            });
         }
-    }
+    };
 
     const handleRemoveSpecsXpath = (productIndex, labelIndex) => {
         const updatedProducts = data.products.map((product, index) => {
@@ -206,11 +228,21 @@ export default function RegisterProductWebsite({ products }) {
         setData('products', updatedProducts);
 
         // Find the selected product from the products array by id
-        const selectedProduct = products.find(prod => prod.id === Number(e));
+        const currentProduct = products.find(prod => prod.id === Number(e));
 
-        if (selectedProduct) {
+        // reset specs label input
+        setSpecsXpath(prev => {
+            const updatedSpecs = [...prev];
+            updatedSpecs[index] = {
+                ...updatedSpecs[index],
+                currentLabel: '' // Reset if no label is found
+            };
+            return updatedSpecs;
+        });
+
+        if (currentProduct) {
             // Create the specs label array for the selected product
-            const labels = selectedProduct.pspecs
+            const labels = currentProduct.pspecs
                 .split('\n') // Split by new lines
                 .map(line => line.trim()) // Trim whitespace
                 .filter(line => line.includes(':')) // Filter valid lines with a colon
@@ -224,6 +256,27 @@ export default function RegisterProductWebsite({ products }) {
                 const updatedSpecsLabel = [...prevSpecsLabel];
                 updatedSpecsLabel[index] = { labels }; // Update the labels for the specific product
                 return updatedSpecsLabel;
+            });
+
+            // setSelectedProduct(currentProduct);        
+            setSelectedProduct(prevSelectedProducts => {
+                const updatedSelectedProducts = [...prevSelectedProducts];
+                updatedSelectedProducts[index] = currentProduct; // Update product at the given index
+                return updatedSelectedProducts;
+            });
+        } else {
+            // When unselecting a product, reset only the current index
+            setSpecsLabel(prev => {
+                const updatedSpecsLabel = [...prev];
+                updatedSpecsLabel[index] = { labels: [{ label: "Select", value: "0" }] }; // Reset the label for the current index
+                return updatedSpecsLabel;
+            });
+
+            // Reset the selected product at the current index
+            setSelectedProduct(prevSelectedProducts => {
+                const updatedSelectedProducts = [...prevSelectedProducts];
+                updatedSelectedProducts[index] = null; // Set the selected product to null for the current index
+                return updatedSelectedProducts;
             });
         }
     };
@@ -515,7 +568,18 @@ export default function RegisterProductWebsite({ products }) {
                                                                             ]
                                                                         }
                                                                     }}
-                                                                    inputValue={specsLabel[index]?.currentLabel}
+                                                                    inputValue={specsXpath[index]?.currentLabel || ''}
+                                                                    onInputChange={(value) => {
+                                                                        // Handle manual input changes by updating currentLabel
+                                                                        setSpecsXpath((prev) => {
+                                                                            const updatedSpecs = [...prev];
+                                                                            updatedSpecs[index] = {
+                                                                                ...updatedSpecs[index],
+                                                                                currentLabel: value,
+                                                                            };
+                                                                            return updatedSpecs;
+                                                                        });
+                                                                    }}
                                                                     onSelectionChange={(e)=>handleSpecsLabel(index, e)}
                                                                 >
                                                                     {(item) => <AutocompleteItem key={item.value}>{item.label}</AutocompleteItem>}
@@ -546,18 +610,22 @@ export default function RegisterProductWebsite({ products }) {
 
                                                     {/* Product Specifications Wrapper */}
                                                     {
-                                                        // selectedProduct &&
-                                                        // <table id="icp_product_specs_div" className="mt-4 w-full">
-                                                        //     <tbody>
-                                                        //         {
-                                                        //             selectedProduct.pspecs.split('\n').map((spec, index) => (
-                                                        //                 <tr key={index} className="border border-gray rounded">
-                                                        //                     <td className="p-1">{spec}</td>
-                                                        //                 </tr>
-                                                        //             ))
-                                                        //         }
-                                                        //     </tbody>
-                                                        // </table>
+                                                        selectedProduct && selectedProduct[index] &&
+                                                        <Accordion isCompact>
+                                                            <AccordionItem key="1" aria-label="Product Specifications" title="Product Specifications">                                                      
+                                                                <table id="icp_product_specs_div" className="mt-4 w-full">
+                                                                    <tbody>
+                                                                        {
+                                                                            selectedProduct[index]?.pspecs?.split('\n').map((spec, index) => (
+                                                                                <tr key={index} className="border border-gray rounded">
+                                                                                    <td className="p-1">{spec}</td>
+                                                                                </tr>
+                                                                            ))
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </AccordionItem>
+                                                        </Accordion>
                                                     }
                                                     <Divider className="my-4" />
                                                 </div>
