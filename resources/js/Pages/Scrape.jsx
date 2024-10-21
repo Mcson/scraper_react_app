@@ -6,6 +6,7 @@ import TextInput from '@/Components/TextInput';
 import { Head, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 import PrimaryLayout from '@/Layouts/PrimaryLayout';
+import SelectAutocomplete from '@/Components/SelectAutocomplete';
 
 export default function Scrape({ registered_products }) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
@@ -71,16 +72,16 @@ export default function Scrape({ registered_products }) {
                                         </select>
                                     </div>
                                 </div> */}
-                                <div>
+                                {/* <div>
                                     <SelectAutocomplete
                                         items={registered_products}
                                         // inputValue={product.product_id}
                                         label="Select Product"
                                         setValue={(e)=>{handleSelectProduct(e)}}
-                                        // classNames={`${errors[`products.${index}.product_id`] ? 'border-red-600' : ''}`}
+                                        classNames={`${errors[`products.${index}.product_id`] ? 'border-red-600' : ''}`}
                                     />
-                                    {/* <InputError message={errors[`products.${index}.product_id`] || ''} className="mt-2" /> */}
-                                </div>
+                                    <InputError message={errors[`products.${index}.product_id`] || ''} className="mt-2" />
+                                </div> */}
 
                                 <div className="flex items-center mt-3">
                                     <PrimaryButton >Add New Product<FontAwesomeIcon icon={faPlus}/></PrimaryButton>
