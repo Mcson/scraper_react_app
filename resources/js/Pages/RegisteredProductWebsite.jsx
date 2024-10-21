@@ -1,6 +1,6 @@
 import TableComp from "@/Components/TableComp";
 import PrimaryLayout from "@/Layouts/PrimaryLayout";
-import { faGaugeHigh, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
+import { faGlobe, faPenToSquare, faTrashCan } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Card, Chip, Tooltip } from "@nextui-org/react";
 import { Head, router } from '@inertiajs/react';
@@ -67,7 +67,7 @@ export default function RegisteredProductWebsite({ registered_products }) { // a
         <PrimaryLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                  <FontAwesomeIcon icon={faGaugeHigh} className="text-primary-500 mr-2" />   Registered Product Website
+                  <FontAwesomeIcon icon={faGlobe} className="text-primary-500 mr-2" />   Registered Product Website
                 </h2>
             }
         >

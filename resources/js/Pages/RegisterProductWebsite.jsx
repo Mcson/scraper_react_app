@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGaugeHigh, faMinus, faPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faSquarePlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { Accordion, AccordionItem, Autocomplete, AutocompleteItem, Card, Chip, Divider, Tooltip } from '@nextui-org/react';
 import TextInput from '@/Components/TextInput';
@@ -375,7 +375,7 @@ export default function RegisterProductWebsite({ products }) {
         <PrimaryLayout
             header={
                 <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                  <FontAwesomeIcon icon={faGaugeHigh} className="text-primary-500 mr-2" />   Register Product
+                  <FontAwesomeIcon icon={faSquarePlus} className="text-primary-500 mr-2" />   Register Product
                 </h2>
             }
         >

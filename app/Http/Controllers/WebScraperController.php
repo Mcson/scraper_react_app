@@ -26,7 +26,7 @@ class WebScraperController extends Controller
     public function index()
     {
         $products = $this->webScraperServices->getIcpProductsAsSelectOption();
-        return Inertia::render('Scraper')->with([
+        return Inertia::render('Scrape')->with([
             'products' => $products
         ]);
     }
