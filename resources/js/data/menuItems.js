@@ -1,6 +1,6 @@
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faGaugeHigh, faGlobe, faFolderOpen, faFolderClosed, faCalendarDays, faListCheck } from '@fortawesome/free-solid-svg-icons';
+import { faGaugeHigh, faGlobe, faFolderOpen, faFolderClosed, faCalendarDays, faListCheck, faGears, faMagnifyingGlassChart, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 
 
 export const menuItems = [
@@ -14,35 +14,42 @@ export const menuItems = [
     {
         id: 2,
         title: "Register",
-        icon: faGlobe,
+        icon: faFolderOpen,
         submenus: [
             {
                 id: 21,
                 title: "Register Product",
                 href: "register.product",
-                icon: faFolderOpen
+                icon: faSquarePlus
             },
             {
                 id: 22,
                 title: "Registered Product Website",
                 href: "registered.product.website",
-                icon: faFolderOpen
+                icon: faGlobe
             }
         ], 
     },
     {
         id: 3,
+        title: "Scrape",
+        icon: faMagnifyingGlassChart,
+        href: "scrape",
+        submenus: [], 
+    },
+    {
+        id: 4,
         title: "View Data",
         icon: faFolderClosed,
         submenus: [
             {
-                id: 31,
+                id: 41,
                 title: "ICP",
                 href: "icp",
                 icon: faListCheck,
             },
             {
-                id: 32,
+                id: 42,
                 title: "Non-ICP",
                 href: "non-icp",
                 icon: faListCheck,
@@ -50,7 +57,7 @@ export const menuItems = [
         ], 
     },
     {
-        id: 4,
+        id: 5,
         title: "Schedule Products",
         icon: faCalendarDays,
         href: "schedule",

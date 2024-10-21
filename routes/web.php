@@ -29,10 +29,11 @@ Route::get('/dashboard', function () {
 
 // Route::get('/products', [ProductsController::class, 'index'])->middleware(['auth', 'verified'])->name('products');
 // Route::get('/register/website', [ProductsWebsiteController::class, 'index'])->middleware(['auth', 'verified'])->name('register.website');
-Route::get('/scraper', [WebScraperController::class, 'index'])->middleware(['auth', 'verified'])->name('scraper');
 
 Route::get('/register-product', [WebScraperController::class, 'registProductView'])->middleware(['auth', 'verified'])->name('register.product');
 Route::get('/registered-product-website', [WebScraperController::class, 'registeredProductView'])->middleware(['auth', 'verified'])->name('registered.product.website');
+
+Route::get('/scrape', [WebScraperController::class, 'index'])->middleware(['auth', 'verified'])->name('scrape');
 
 
 Route::middleware('auth')->group(function () {
